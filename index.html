@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ulin · Hayu ulin bareng</title>
+<meta name="description" content="Game retro gratis dan legal. Tanpa unduh, langsung main di HP atau laptop.">
+<meta name="theme-color" content="#14110F">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ulin · Hayu ulin bareng">
+<meta property="og:description" content="Game retro gratis dan legal. Langsung main di HP.">
+<meta property="og:url" content="https://bukhorizainun.github.io/ulin/">
+<meta property="og:image" content="https://bukhorizainun.github.io/ulin/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --ink:#14110F; --ink-2:#1C1815; --ink-3:#2A241F; --line:rgba(242,236,226,.09);
+  --cream:#F2ECE2; --muted:#A39A8C; --coral:#FF5A3C; --coral-deep:#D9442B;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--ink) radial-gradient(120% 60% at 50% -10%,rgba(255,90,60,.10),transparent 60%) no-repeat;
+  color:var(--cream);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  min-height:100dvh;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1040px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left))}
+.top{display:flex;align-items:center;gap:12px;padding:22px 0 8px}
+.wordmark{display:block;width:72px;height:24px;background:var(--coral);
+  -webkit-mask:url(assets/wordmark.svg) center/contain no-repeat;mask:url(assets/wordmark.svg) center/contain no-repeat}
+.tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:2px 10px;letter-spacing:.02em}
+.hero{padding:44px 0 30px}
+.hero h1{font-size:clamp(34px,8.5vw,60px);line-height:1.04;letter-spacing:-.025em;font-weight:700}
+.hero p{color:var(--muted);margin-top:14px;max-width:38ch;font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:14px}
+@media (min-width:720px){.grid{grid-template-columns:repeat(4,1fr);gap:18px}}
+.card{display:block;text-decoration:none;background:var(--ink-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  transition:transform 160ms var(--ease-out),border-color 200ms ease}
+.card img{display:block;width:100%;height:auto;aspect-ratio:256/240;image-rendering:pixelated;background:#000}
+.card .meta{padding:12px 14px 14px}
+.card h3{font-size:15px;font-weight:600;letter-spacing:-.005em}
+.card p{font-size:13px;color:var(--muted);margin-top:2px}
+.card:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.card:hover{transform:translateY(-3px);border-color:rgba(255,90,60,.45)}}
+.note{margin:56px 0 0;padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--ink-2)}
+.note h2{font-size:16px;font-weight:600}
+.note p{color:var(--muted);font-size:14px;margin-top:6px;max-width:68ch}
+footer{color:var(--muted);font-size:13px;padding:36px 0 calc(32px + env(safe-area-inset-bottom))}
+footer details{margin-top:10px}
+footer summary{cursor:pointer;color:var(--cream)}
+footer ul{padding-left:18px;margin-top:8px}
+footer li{margin:4px 0}
+.sig{margin-top:18px;color:var(--cream);opacity:.8}
+
+/* Player */
+.player{position:fixed;inset:0;z-index:20;background:#0B0908;display:flex;flex-direction:column;
+  opacity:1;transform:none;transition:opacity 200ms ease,transform 260ms var(--ease-out);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left)}
+@starting-style{.player{opacity:0;transform:translateY(14px)}}
+.player[hidden]{display:none}
+.bar{display:flex;align-items:center;gap:6px;padding:10px 10px 6px}
+.ib{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none;transition:transform 140ms var(--ease-out),background 160ms ease}
+.ib:active{transform:scale(.94);background:var(--ink-3)}
+.ib svg{width:22px;height:22px}
+.ptitle{flex:1;min-width:0;line-height:1.25}
+.ptitle b{display:block;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptitle small{color:var(--muted);font-size:12px}
+.stage{position:relative;display:grid;place-items:center;padding:4px 8px}
+canvas{display:block;width:100%;max-width:min(100%,calc((100dvh - 360px) * 1.0667));aspect-ratio:256/240;height:auto;
+  image-rendering:pixelated;background:#000;border-radius:6px}
+.go{position:absolute;inset:0;margin:auto;width:max-content;height:max-content;background:var(--coral);color:var(--ink);
+  font-weight:700;padding:12px 22px;border-radius:99px;transition:transform 140ms var(--ease-out)}
+.go:active{transform:scale(.96)}
+.pad{flex:1;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 22px calc(20px + env(safe-area-inset-bottom));user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.pad *{touch-action:none}
+.dpad{position:relative;width:148px;height:148px;flex:none}
+.dpad::before,.dpad::after{content:"";position:absolute;background:var(--ink-3);border-radius:12px}
+.dpad::before{left:0;right:0;top:50px;height:48px}
+.dpad::after{top:0;bottom:0;left:50px;width:48px}
+.dpad i{position:absolute;z-index:1;width:0;height:0;border:7px solid transparent;opacity:.55;transition:opacity 80ms}
+.dpad i.on{opacity:1}
+.dpad .u{left:67px;top:10px;border-bottom:9px solid var(--cream);border-top:0}
+.dpad .d{left:67px;bottom:10px;border-top:9px solid var(--cream);border-bottom:0}
+.dpad .l{top:67px;left:10px;border-right:9px solid var(--cream);border-left:0}
+.dpad .r{top:67px;right:10px;border-left:9px solid var(--cream);border-right:0}
+.mid{display:flex;gap:10px;align-self:flex-end;margin-bottom:6px}
+.pill{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--ink-3);border-radius:99px;padding:7px 12px}
+.ab{position:relative;width:150px;height:130px;flex:none}
+.btn{position:absolute;width:64px;height:64px;border-radius:50%;background:var(--coral);color:var(--ink);font-weight:800;font-size:18px;
+  display:grid;place-items:center;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);transition:transform 90ms ease-out,filter 90ms}
+.btn.b{left:0;bottom:4px;background:var(--coral-deep)}
+.btn.a{right:0;top:4px}
+.pill.on,.btn.on{transform:scale(.92);filter:brightness(1.15)}
+.keys{display:none;color:var(--muted);font-size:13px;text-align:center;padding:10px 16px 18px}
+.keys kbd{font:12px ui-monospace,monospace;background:var(--ink-3);border-radius:6px;padding:2px 6px;color:var(--cream)}
+@media (hover:hover) and (pointer:fine){
+  .pad{display:none}.keys{display:block}
+  canvas{max-width:min(100%,calc((100dvh - 150px) * 1.0667))}
+}
+@media (orientation:landscape) and (max-height:540px){
+  .bar{position:absolute;top:0;left:0;right:0;z-index:2;padding-left:max(10px,env(safe-area-inset-left))}
+  .ptitle{opacity:.8}
+  .stage{flex:1;padding:6px}
+  canvas{max-width:none;width:auto;height:calc(100dvh - 12px)}
+  .pad{position:absolute;inset:0;pointer-events:none;padding:0 max(18px,env(safe-area-inset-right)) 0 max(18px,env(safe-area-inset-left))}
+  .pad>*{pointer-events:auto}
+  .mid{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);margin:0}
+}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));z-index:30;background:var(--cream);color:var(--ink);
+  font-size:14px;font-weight:600;padding:10px 16px;border-radius:12px;transform:translate(-50%,0);opacity:1;
+  transition:opacity 180ms ease,transform 220ms var(--ease-out)}
+.toast[hidden]{display:block;opacity:0;transform:translate(-50%,10px);pointer-events:none}
+@media (prefers-reduced-motion:reduce){*{transition-duration:0ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a href="#/" aria-label="Ulin, beranda"><span class="wordmark"></span></a>
+    <span class="tag">arcade retro</span>
+  </header>
+  <main>
+    <section class="hero">
+      <h1>Hayu ulin bareng.</h1>
+      <p>Game retro gratis dan legal. Tanpa unduh, langsung main di HP atau laptop.</p>
+    </section>
+    <section class="grid" id="grid" aria-label="Daftar game"></section>
+    <section class="note">
+      <h2>Kenapa bisa gratis?</h2>
+      <p>Semua game di Ulin adalah game NES buatan penggemar yang dirilis pembuatnya dengan lisensi terbuka. Nama pembuat, lisensi, dan kode sumbernya tercantum di setiap game. Ulin tidak memasang iklan dan tidak menjual apa pun.</p>
+    </section>
+  </main>
+  <footer>
+    <details>
+      <summary>Kredit &amp; lisensi</summary>
+      <ul id="credits"></ul>
+    </details>
+    <p class="sig">Eigenzayn · mbz</p>
+  </footer>
+</div>
+
+<div class="player" id="player" hidden>
+  <div class="bar">
+    <button class="ib" id="back" aria-label="Kembali"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <div class="ptitle"><b id="ptitle"></b><small id="psub"></small></div>
+    <button class="ib" id="share" aria-label="Bagikan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v13"/></svg></button>
+    <button class="ib" id="full" aria-label="Layar penuh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  </div>
+  <div class="stage">
+    <canvas id="screen" width="256" height="240" aria-label="Layar game"></canvas>
+    <button class="go" id="go" hidden>▶ Mulai main</button>
+  </div>
+  <div class="pad" id="pad">
+    <div class="dpad" id="dpad"><i class="u"></i><i class="d"></i><i class="l"></i><i class="r"></i></div>
+    <div class="mid"><button class="pill" data-k="select">Select</button><button class="pill" data-k="start">Start</button></div>
+    <div class="ab"><button class="btn b" data-k="b">B</button><button class="btn a" data-k="a">A</button></div>
+  </div>
+  <p class="keys">Arah <kbd>←↑↓→</kbd> · B <kbd>Z</kbd> · A <kbd>X</kbd> · Start <kbd>Enter</kbd> · Select <kbd>Shift</kbd> · stik game juga bisa</p>
+</div>
+<div class="toast" id="toast" hidden role="status"></div>
+<script src="app.js"></script>
+</body>
+</html>
