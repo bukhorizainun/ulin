@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Mael ke Linz</title>
 <meta name="robots" content="noindex">
-<meta name="description" content="Hadiah ulang tahun ke-7 untuk Mael dari Ayah di Linz.">
+<meta name="description" content="Hadiah ulang tahun ke-7 untuk Mael dari Baba di Linz.">
 <meta property="og:title" content="Mael ke Linz">
-<meta property="og:description" content="Hadiah ulang tahun ke-7 untuk Mael dari Ayah di Linz. Ketuk untuk main!">
+<meta property="og:description" content="Main bola bareng Mbappé dan Yamal. Hadiah ulang tahun ke-7 untuk Mael dari Baba di Linz.">
 <meta property="og:image" content="https://bukhorizainun.github.io/ulin/mael/og.png">
 <meta property="og:image:width" content="960">
 <meta property="og:image:height" content="540">
@@ -94,6 +94,18 @@ function playHB() {
 let voice = null; // optional recorded message: put ayah.mp3 next to this file
 fetch('ayah.mp3', { method: 'HEAD' }).then((r) => { if (r.ok) { voice = new Audio('ayah.mp3'); voice.preload = 'auto'; } }).catch(() => {});
 
+// Family photos are not in this public repo. They load from a private host when the
+// shared link carries #k=<key>; the key is remembered on that tablet.
+const PH = {};
+(() => {
+  let k = (location.hash.match(/k=([\w-]+)/) || [])[1];
+  try { if (k) localStorage.setItem('mael-k', k); else k = localStorage.getItem('mael-k'); } catch (_) {}
+  if (!k) return;
+  for (const [n, f] of [['mael', 'face_mael.png'], ['baba', 'face_baba.png'], ['ibu', 'face_ibu.png'], ['keluarga', 'keluarga.jpg']]) {
+    const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => { PH[n] = im; }; im.src = `https://mael-foto.zainun.workers.dev/${k}/${f}`;
+  }
+})();
+
 // ---------- drawing helpers ----------
 function circle(x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
 function rrect(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
@@ -140,6 +152,7 @@ function candle(x, y, h, lit, col, flick = 0) {
 function kid(x, y, o = {}) {
   const pose = o.pose || 'run', face = o.face || 1, ph = o.ph || 0;
   const skin = o.skin || '#C68B59', skin2 = o.skin2 || '#A8713F', jersey = o.jersey || '#E63946', hair = o.hair || '#1F1A17';
+  const who = o.who === undefined ? 'mael' : o.who;
   let lf = Math.sin(ph) * .75, lb = -lf, af = -lf * .9, ab = lf * .9;
   if (pose === 'air') { lf = .7; lb = -.4; af = 2.4; ab = -.9; }
   else if (pose === 'stand') { lf = .1; lb = -.1; af = .2; ab = -.2; }
@@ -158,9 +171,11 @@ function kid(x, y, o = {}) {
   arm(ab, skin2); leg(lb, skin2);
   ctx.fillStyle = '#fff'; rrect(-14, -56, 28, 16, 5); ctx.fill();
   ctx.fillStyle = jersey; rrect(-15, -90, 30, 40, 10); ctx.fill();
-  ctx.save(); ctx.scale(face, 1); text(o.num || '7', 0, -70, 20, '#fff'); ctx.restore();
+  if (o.stripes) { ctx.save(); rrect(-15, -90, 30, 40, 10); ctx.clip(); ctx.fillStyle = o.stripes; for (let i = -12; i < 15; i += 12) ctx.fillRect(i, -90, 6, 40); ctx.restore(); }
+  ctx.save(); ctx.scale(face, 1); text(o.num || '7', 0, -70, 20, o.numCol || '#fff', o.stripes ? { stroke: '#1D3557', sw: 4 } : {}); ctx.restore();
   leg(lf, skin); arm(af, skin);
   ctx.fillStyle = jersey; circle(0, -80, 7);
+  if (bigHead(o.toon, who, face)) { ctx.restore(); return; }
   ctx.fillStyle = skin; circle(2, -108, 19);
   ctx.fillStyle = hair; ctx.beginPath(); ctx.arc(0, -112, 20, PI * .85, PI * 2); ctx.closePath(); ctx.fill();
   ctx.fillStyle = skin2; circle(-6, -106, 5);
@@ -169,6 +184,40 @@ function kid(x, y, o = {}) {
   ctx.fillStyle = 'rgba(255,110,110,.35)'; circle(5, -100, 4.5);
   ctx.restore();
 }
+
+// Big heads: a family photo (round PNG) or a drawn caricature of a star player.
+function bigHead(toon, who, face) {
+  const im = who && PH[who], cy = -122;
+  if (im && !toon) {
+    ctx.save(); ctx.scale(face, 1);
+    ctx.fillStyle = '#fff'; circle(0, cy, 32); ctx.drawImage(im, -29, cy - 29, 58, 58);
+    ctx.restore(); return true;
+  }
+  if (!toon) return false;
+  const R = 27, sk = toon === 'mbappe' ? '#6B4226' : '#C08A5B', dk = toon === 'mbappe' ? '#55331C' : '#9E6F45';
+  ctx.fillStyle = dk; circle(-R + 4, cy + 3, 7);
+  ctx.fillStyle = sk; circle(0, cy, R);
+  if (toon === 'mbappe') {
+    ctx.fillStyle = 'rgba(255,255,255,.2)'; ctx.beginPath(); ctx.ellipse(-4, cy - 17, 11, 5, -.3, 0, TAU); ctx.fill();
+    ctx.fillStyle = 'rgba(25,12,4,.35)'; ctx.beginPath(); ctx.ellipse(8, cy + 15, 15, 9, 0, 0, TAU); ctx.fill();
+  } else {
+    ctx.fillStyle = '#1B1410';
+    for (let i = 0; i < 9; i++) { const a = PI * 1.02 + i * PI * .12; circle(Math.cos(a) * R * .82, cy - 4 + Math.sin(a) * R * .82, 8.5); }
+    circle(-6, cy - 24, 10); circle(8, cy - 25, 9); circle(-16, cy - 16, 8);
+  }
+  ctx.fillStyle = '#fff'; circle(8, cy - 3, 6); circle(20, cy - 3, 5);
+  ctx.fillStyle = '#1A1A1A'; circle(10, cy - 3, 3); circle(21, cy - 3, 2.6);
+  ctx.strokeStyle = '#1A1008'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(3, cy - 12); ctx.lineTo(13, cy - 13); ctx.moveTo(17, cy - 12); ctx.lineTo(24, cy - 11); ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(14, cy + 8, 8, .1 * PI, .9 * PI); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#3A2010'; ctx.lineWidth = 2; ctx.stroke();
+  return true;
+}
+const BUD = {
+  mbappe: { name: 'Kylian Mbappé', nick: 'Si Kilat', toon: 'mbappe', jersey: '#F4F4F4', num: '10', numCol: '#C9A227', skin: '#6B4226', skin2: '#55331C', power: 'TURBO KILAT!', col: '#4EA8DE' },
+  yamal: { name: 'Lamine Yamal', nick: 'Si Ajaib', toon: 'yamal', jersey: '#A50044', stripes: '#004D98', num: '10', numCol: '#FFD23F', skin: '#C08A5B', skin2: '#9E6F45', power: 'MAGNET AJAIB!', col: '#FF8FAB' },
+};
+const budKid = (b, x, y, o = {}) => kid(x, y, Object.assign({ who: null, toon: b.toon, jersey: b.jersey, stripes: b.stripes, num: b.num, numCol: b.numCol, skin: b.skin, skin2: b.skin2 }, o));
 
 // ---------- scenery ----------
 function palm(x, y, s) {
@@ -287,10 +336,10 @@ function bgLinz(d) {
 }
 
 const STAGES = [
-  { place: 'Lapangan Kampung', country: 'Indonesia', flag: ID_FLAG, bg: bgIndo, ground: '#5DBB4C', edge: '#3F9A3A', speck: '#4AA63F', stripes: true, obst: ['cone', 'chicken'] },
-  { place: 'Pantai', country: 'Indonesia', flag: ID_FLAG, bg: bgBeach, ground: '#F1D49A', edge: '#D9B672', speck: '#D7B676', obst: ['castle', 'crab'] },
-  { place: 'Pegunungan Alpen', country: 'Austria', flag: AT_FLAG, bg: bgAlps, ground: '#F5F9FC', edge: '#C9DCEA', speck: '#D5E4F0', obst: ['snowman', 'rock'] },
-  { place: 'Kota Linz', country: 'Austria', flag: AT_FLAG, bg: bgLinz, ground: '#58B84A', edge: '#3C9636', speck: '#4BA640', stripes: true, obst: ['cone', 'balls'] },
+  { place: 'Lapangan Kampung', country: 'Indonesia', flag: ID_FLAG, bg: bgIndo, ground: '#5DBB4C', edge: '#3F9A3A', speck: '#4AA63F', stripes: true, obst: ['cone', 'chicken'], bud: 'mbappe' },
+  { place: 'Pantai', country: 'Indonesia', flag: ID_FLAG, bg: bgBeach, ground: '#F1D49A', edge: '#D9B672', speck: '#D7B676', obst: ['castle', 'crab'], bud: 'yamal' },
+  { place: 'Pegunungan Alpen', country: 'Austria', flag: AT_FLAG, bg: bgAlps, ground: '#F5F9FC', edge: '#C9DCEA', speck: '#D5E4F0', obst: ['snowman', 'rock'], bud: 'mbappe' },
+  { place: 'Kota Linz', country: 'Austria', flag: AT_FLAG, bg: bgLinz, ground: '#58B84A', edge: '#3C9636', speck: '#4BA640', stripes: true, obst: ['cone', 'balls'], bud: 'yamal' },
 ];
 function ground(d) {
   const S = STAGES[stage]; ctx.fillStyle = S.ground; ctx.fillRect(0, GY, W, H - GY);
@@ -357,10 +406,13 @@ function drawParts() {
 function floatText(s, x, y, col = '#fff') { floats.push({ s, x, y, t: 0, col }); }
 
 // ---------- game state ----------
-let state = 'title', st = 0, stage = 0, dist = 0, stars = 0, candles = 0, items = [], shake = 0, pen = null, fin = null;
-const me = { y: GY, vy: 0, jumps: 0, stumble: 0, ph: 0 };
+let state = 'title', st = 0, stage = 0, dist = 0, stars = 0, candles = 0, items = [], shake = 0, pen = null, fin = null, slow = 0, cards = 0;
+const me = { y: GY, vy: 0, jumps: 0, stumble: 0, ph: 0, pow: 0, combo: 0, lastStar: -9 };
 const SKIP_TO_CAKE = location.hash === '#kue';
-function go(s) { state = s; st = 0; if (s === 'penalty') startPenalty(); if (s === 'finale') startFinale(); }
+function go(s) {
+  state = s; st = 0; if (s === 'penalty') startPenalty(); if (s === 'finale') startFinale();
+  if (s === 'card') { cards = stage + 1; setTimeout(() => [784, 988, 1175, 1568, 1976].forEach((f, i) => tone(f, .25, 'triangle', .12, 0, i * .07)), 500); }
+}
 
 function buildStage() {
   items = []; const S = STAGES[stage]; let x = 950, n = 0;
@@ -373,24 +425,46 @@ function buildStage() {
     x += gap; n++;
   }
   if (stage < 3) items.push({ k: 'candle', x: L * .55, y: GY - 190 });
+  items.push({ k: 'pow', x: L * .22, y: GY - 120 }, { k: 'pow', x: L * .72, y: GY - 120 });
 }
-function startRun() { buildStage(); dist = 0; me.y = GY; me.vy = 0; me.jumps = 0; me.stumble = 0; go('run'); }
+function startRun() { buildStage(); dist = 0; me.y = GY; me.vy = 0; me.jumps = 0; me.stumble = 0; me.pow = 0; me.combo = 0; go('run'); }
+const bud = () => BUD[STAGES[stage].bud];
 function jump() {
   if (me.jumps === 0 && me.y >= GY - 1) { me.vy = -780; me.jumps = 1; sfx.jump(); }
   else if (me.jumps === 1) { me.vy = -700; me.jumps = 2; sfx.jump(); }
 }
 function updRun(dt) {
-  const spd = (270 + stage * 15) * (me.stumble > 0 ? .5 : 1);
+  const turbo = me.pow > 0 && STAGES[stage].bud === 'mbappe', magnet = me.pow > 0 && STAGES[stage].bud === 'yamal';
+  if (me.pow > 0) me.pow -= dt;
+  const spd = (270 + stage * 15) * (me.stumble > 0 ? .5 : 1) * (turbo ? 1.7 : 1);
   dist += spd * dt; me.ph += spd * dt * .045;
   me.vy += 2200 * dt; me.y += me.vy * dt; if (me.y >= GY) { me.y = GY; me.vy = 0; me.jumps = 0; }
   if (me.stumble > 0) me.stumble -= dt;
   for (const it of items) {
     const sx = it.x - dist;
     if (it.k === 'ob') {
-      if (!it.hit && sx < MX + 14 && sx + it.w > MX - 14 && me.y > GY - it.h + 6) { it.hit = true; me.stumble = .8; shake = .3; sfx.bump(); floatText('Ups!', MX, me.y - 150); }
+      if (it.fly !== undefined) { it.fly += dt; continue; }
+      if (!it.hit && sx < MX + 14 && sx + it.w > MX - 14 && me.y > GY - it.h + 6) {
+        it.hit = true;
+        if (me.pow > 0) { it.fly = 0; shake = .2; sfx.kick(); floatText('Tembus!', MX + 40, me.y - 150, '#7FDBFF'); }
+        else { me.stumble = .8; shake = .3; sfx.bump(); floatText('Ups!', MX, me.y - 150); }
+      }
     } else if (it.got) continue;
-    else if (it.k === 'star') {
-      if (Math.abs(sx - MX) < 34 && Math.abs(it.y - (me.y - 60)) < 62) { it.got = true; stars++; sfx.star(); burst(sx, it.y, '#FFD23F', 6, 160); }
+    else if (it.k === 'pow') {
+      if (Math.abs(sx - MX) < 50 && Math.abs(it.y - (me.y - 70)) < 80) {
+        it.got = true; me.pow = 5; shake = .25; slow = .25; const b = bud();
+        [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .18, 'square', .07, 0, i * .05));
+        burst(MX, me.y - 80, b.col, 26, 320); floatText(b.power, 480, 170, b.col);
+      }
+    } else if (it.k === 'star') {
+      if (magnet && Math.abs(sx - MX) < 300) { const k = Math.min(1, dt * 7); it.x += (dist + MX - it.x) * k; it.y += (me.y - 60 - it.y) * k; }
+      if (Math.abs(it.x - dist - MX) < 34 && Math.abs(it.y - (me.y - 60)) < 62) {
+        it.got = true; const v = magnet ? 2 : 1; stars += v;
+        me.combo = T - me.lastStar < .8 ? me.combo + 1 : 1; me.lastStar = T;
+        tone(1318 * Math.pow(1.06, Math.min(me.combo, 12)), .08, 'square', .05); burst(sx, it.y, '#FFD23F', 6, 160);
+        if (v > 1) floatText('+2', sx, it.y - 20, '#FF8FAB');
+        if (me.combo % 5 === 0) floatText('Combo x' + me.combo + '!', MX + 60, me.y - 190, '#FFD23F');
+      }
     } else if (it.k === 'candle') { // the candle drifts to Mael, so it is never missed
       if (sx < MX + 360) it.mag = true;
       if (it.mag) { const k = Math.min(1, dt * 5); it.x += (dist + MX - it.x) * k; it.y += (me.y - 70 - it.y) * k; }
@@ -403,9 +477,15 @@ function updRun(dt) {
 const GX1 = 560, GX2 = 880, GTOP = 250, AIMY = 330;
 function startPenalty() { pen = { phase: 'aim', t: 0, tries: 0, kx: 720, bx: 330, by: GY - 14, br: 14, p: 0, net: 0 }; sfx.whistle(); }
 const aimX = () => 600 + (Math.sin(pen.t * 1.8) * .5 + .5) * 240;
-function shoot() {
-  pen.tx = aimX(); pen.ty = AIMY + rnd(-30, 30);
-  pen.save = pen.tries < 2 && Math.abs(pen.kx - pen.tx) < 44; // third try always scores
+function shoot(sw) {
+  pen.tx = aimX(); pen.ty = AIMY + rnd(-30, 30); pen.cv = 0;
+  if (sw) { // swipe: aim where the finger went, a bent swipe bends the ball
+    pen.tx = clamp(sw.x1 + sw.dx * .4, GX1 + 28, GX2 - 28); pen.ty = clamp(sw.y1 + sw.dy * .4, GTOP + 28, GY - 34);
+    pen.cv = clamp(sw.bend * 1.6, -130, 130);
+  }
+  const banana = Math.abs(pen.cv) > 30;
+  if (banana) floatText('Tendangan pisang!', 480, 200, '#FF8FAB');
+  pen.save = !banana && pen.tries < 2 && Math.abs(pen.kx - pen.tx) < 44; // third try always scores
   pen.kTarget = pen.save ? pen.tx : (pen.tx < 720 ? 830 : 610);
   pen.tries++; pen.phase = 'shoot'; pen.p = 0; sfx.kick();
 }
@@ -414,22 +494,70 @@ function updPenalty(dt) {
   if (P.phase === 'aim') P.kx = 720 + Math.sin(P.t * 1.1 + 1) * 95;
   else if (P.phase === 'shoot') {
     P.p += dt / .55; const k = Math.min(1, P.p);
-    P.bx = 330 + (P.tx - 330) * k; P.by = (GY - 14) + (P.ty - (GY - 14)) * k - Math.sin(k * PI) * 70; P.br = 14 - 4 * k;
+    const len = Math.hypot(P.tx - 330, P.ty - GY + 14) || 1, bend = (P.cv || 0) * Math.sin(k * PI);
+    P.bx = 330 + (P.tx - 330) * k - (P.ty - GY + 14) / len * bend; P.by = (GY - 14) + (P.ty - (GY - 14)) * k - Math.sin(k * PI) * 70 + (P.tx - 330) / len * bend; P.br = 14 - 4 * k;
+    if (P.cv) { P.trail = P.trail || []; P.trail.push([P.bx, P.by]); }
     P.kx += (P.kTarget - P.kx) * Math.min(1, dt * (P.save ? 9 : 5));
     if (P.p >= 1) {
       P.rt = 0;
       if (P.save) { P.phase = 'saved'; sfx.save(); floatText('Hampir! Coba lagi ya', 480, 210); }
-      else { P.phase = 'goal'; P.net = 1; candles++; sfx.cheer(); confetti(90); floatText('Lilin ke-' + candles + '!', 480, 250, '#FFD23F'); setTimeout(sfx.candle, 300); }
+      else { P.phase = 'goal'; P.net = 1; candles++; slow = .7; shake = .35; sfx.cheer(); confetti(90); floatText('Lilin ke-' + candles + '!', 480, 250, '#FFD23F'); setTimeout(sfx.candle, 300); }
     }
   } else if (P.phase === 'saved') {
     P.rt += dt; P.bx = P.kx - 12; P.by = GY - 82;
-    if (P.rt > 1.4) { P.phase = 'aim'; P.bx = 330; P.by = GY - 14; P.br = 14; }
+    if (P.rt > 1.4) { P.phase = 'aim'; P.bx = 330; P.by = GY - 14; P.br = 14; P.trail = null; }
   } else if (P.phase === 'goal') {
     P.rt += dt; P.net = Math.max(0, P.net - dt * 1.5); P.by = Math.min(GY - 12, P.by + dt * 160);
-    if (P.rt > 3) nextStage();
+    if (P.rt > 3) go('card');
   }
 }
 function nextStage() { stage++; parts = []; if (stage === 2) go('fly'); else if (stage >= 4) go('finale'); else go('intro'); }
+
+// ---------- player cards: one per stage, the family card comes last ----------
+const CARDS = [
+  { bud: 'mbappe', top: '#1D3557', bot: '#4EA8DE' },
+  { bud: 'yamal', top: '#5B0E2D', bot: '#004D98' },
+  { name: 'Mael', nick: 'Sang Kapten', who: 'mael', top: '#E63946', bot: '#FFB703' },
+  { name: 'Ibu & Baba', nick: 'Pendukung Nomor 1', who: 'ortu', top: '#2BB673', bot: '#FFD23F' },
+];
+function drawCardFace(i, cx, cy, sc) {
+  const C = CARDS[i], b = C.bud && BUD[C.bud];
+  ctx.save(); ctx.translate(cx, cy); ctx.scale(sc, sc);
+  const g = ctx.createLinearGradient(0, -210, 0, 210); g.addColorStop(0, C.top); g.addColorStop(1, C.bot);
+  ctx.fillStyle = g; rrect(-150, -210, 300, 420, 24); ctx.fill(); ctx.strokeStyle = '#FFD23F'; ctx.lineWidth = 8; ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 6; for (let r = 0; r < 6; r++) { ctx.beginPath(); ctx.arc(0, -40, 40 + r * 26, 0, TAU); ctx.stroke(); }
+  if (b) { ctx.save(); ctx.translate(0, 70); ctx.scale(1.55, 1.55); budKid(b, 0, 0, { pose: 'stand' }); ctx.restore(); }
+  else if (C.who === 'mael') { ctx.save(); ctx.translate(0, 70); ctx.scale(1.55, 1.55); kid(0, 0, { pose: 'stand' }); ctx.restore(); }
+  else {
+    for (const [n, x, y] of [['ibu', -62, -50], ['baba', 62, -60]]) {
+      ctx.fillStyle = '#fff'; circle(x, y, 62);
+      if (PH[n]) ctx.drawImage(PH[n], x - 58, y - 58, 116, 116); else text(n === 'ibu' ? 'Ibu' : 'Baba', x, y, 34, C.top);
+    }
+    ctx.fillStyle = '#E63946'; ctx.beginPath(); ctx.moveTo(0, 70); ctx.bezierCurveTo(-40, 35, -26, 5, 0, 28); ctx.bezierCurveTo(26, 5, 40, 35, 0, 70); ctx.fill();
+  }
+  ctx.fillStyle = 'rgba(255,255,255,.95)'; rrect(-130, 108, 260, 84, 16); ctx.fill();
+  text(b ? b.name : C.name, 0, 136, 30, '#1D3557');
+  text(b ? b.nick + ' · No. 10' : C.nick, 0, 170, 22, '#E63946', { weight: 700 });
+  text(String(i + 1), -118, -180, 34, '#FFD23F', { stroke: '#1D3557', sw: 6 });
+  ctx.restore();
+}
+function drawCard() {
+  drawPenalty(); ctx.fillStyle = 'rgba(15,20,40,.72)'; ctx.fillRect(0, 0, W, H);
+  const k = clamp(st / .7, 0, 1), flip = Math.cos(k * PI), sc = .92 + .08 * easeOut(k);
+  ctx.save(); ctx.translate(480, 262); ctx.rotate(Math.sin(T * 1.5) * .02);
+  if (flip > 0) { ctx.scale(flip, 1); ctx.fillStyle = '#1D3557'; rrect(-150 * sc, -210 * sc, 300 * sc, 420 * sc, 24); ctx.fill(); ctx.strokeStyle = '#FFD23F'; ctx.lineWidth = 8; ctx.stroke(); text('?', 0, 0, 140, '#FFD23F'); }
+  else { ctx.scale(-flip, 1); drawCardFace(stage, 0, 0, sc); }
+  ctx.restore();
+  if (k >= 1) {
+    text('Kartu baru!', 480, 30, 34, '#FFD23F', { stroke: '#1D3557', sw: 7 });
+    text('Album ' + (stage + 1) + '/4', 825, 150, 24, '#fff');
+    for (let i = 0; i < 4; i++) {
+      const x = 790 + (i % 2) * 70, y = 212 + Math.floor(i / 2) * 96;
+      if (i <= stage) drawCardFace(i, x, y, .2); else { ctx.fillStyle = 'rgba(255,255,255,.2)'; rrect(x - 30, y - 42, 60, 84, 8); ctx.fill(); }
+    }
+    if (st > 1.6) text('Ketuk untuk lanjut', 480, 512, 26, '#fff', { weight: 700 });
+  }
+}
 
 const candleX = (i) => 480 - 90 + i * 30;
 function startFinale() { fin = { phase: 'light', lit: 0, next: .8, t: 0, fw: 0, blown: false, msg: 0 }; parts = []; }
@@ -448,7 +576,7 @@ function blow() {
   noise(.5, .25, 600, 0, .05); sfx.cheer(); confetti(140);
   if (voice) setTimeout(() => { if (!muted) voice.play().catch(() => {}); }, 1500);
 }
-function restart() { stage = 0; stars = 0; candles = 0; parts = []; floats = []; go('intro'); }
+function restart() { stage = 0; stars = 0; candles = 0; cards = 0; parts = []; floats = []; go('intro'); }
 
 // ---------- screens ----------
 function hud() {
@@ -476,13 +604,14 @@ function muteBtn() {
 function drawTitle() {
   bgIndo(T * 40); ground(T * 40);
   const b = Math.abs(Math.sin(T * 3.2));
+  budKid(BUD.mbappe, 110, GY, { pose: 'stand' }); budKid(BUD.yamal, 850, GY, { pose: 'stand', face: -1 });
   kid(240, GY, { pose: b < .25 ? 'kick' : 'stand' }); drawBall(292, GY - 30 - b * 120, 14, T * 5);
   text('Mael ke Linz', 480, 128, 96, '#fff', { stroke: '#1D3557', sw: 16 });
-  text('Petualangan bola ulang tahun ke-7', 480, 200, 30, '#1D3557', { weight: 700 });
+  text('Main bola bareng Mbappé & Yamal · ulang tahun ke-7', 480, 200, 28, '#1D3557', { weight: 700 });
   const s = 1 + Math.sin(T * 4) * .04;
   ctx.save(); ctx.translate(480, 296); ctx.scale(s, s); ctx.fillStyle = '#E63946'; rrect(-120, -38, 240, 76, 38); ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 5; ctx.stroke(); text('Main  ▶', 0, 3, 42, '#fff'); ctx.restore();
   ctx.fillStyle = 'rgba(255,255,255,.88)'; rrect(150, 352, 660, 42, 21); ctx.fill();
-  text('Ketuk layar untuk melompat. Ketuk dua kali untuk lompat tinggi!', 480, 374, 22, '#1D3557', { weight: 700 });
+  text('Ketuk untuk lompat. Ambil kepala bintang = kekuatan super!', 480, 374, 22, '#1D3557', { weight: 700 });
   if (innerHeight > innerWidth) text('Putar tablet ke samping supaya lebih besar', 480, 500, 24, '#fff', { stroke: '#1D3557', sw: 6 });
 }
 function drawIntro() {
@@ -500,11 +629,25 @@ function drawRun() {
   STAGES[stage].bg(dist); ground(dist);
   for (const it of items) {
     const sx = it.x - dist; if (sx < -120 || sx > W + 120) continue;
-    if (it.k === 'ob') OB[it.type].draw(sx, GY);
+    if (it.k === 'ob') {
+      if (it.fly === undefined) OB[it.type].draw(sx, GY);
+      else if (it.fly < 1.2) { ctx.save(); ctx.translate(sx + it.fly * 500, GY - it.fly * 420 + it.fly * it.fly * 300); ctx.rotate(it.fly * 9); OB[it.type].draw(-it.w / 2, it.h / 2); ctx.restore(); }
+    } else if (it.k === 'pow') {
+      if (it.got) continue; const b = bud(), p = 1 + Math.sin(T * 6) * .08;
+      ctx.fillStyle = b.col; ctx.globalAlpha = .3; circle(sx, it.y, 52 * p); ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.setLineDash([10, 8]); ctx.lineDashOffset = -T * 40; ctx.beginPath(); ctx.arc(sx, it.y, 44, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+      ctx.save(); ctx.translate(sx, it.y + 122 * .8); ctx.scale(.8, .8); bigHead(b.toon, null, 1); ctx.restore();
+    }
     else if (!it.got && it.k === 'star') { ctx.save(); ctx.translate(sx, it.y); ctx.scale(.75 + .25 * Math.sin(T * 5 + it.x), 1); star(0, 0, 14); ctx.restore(); }
     else if (!it.got) { ctx.fillStyle = 'rgba(255,210,90,.35)'; circle(sx, it.y - 26, 30 + Math.sin(T * 6) * 4); candle(sx, it.y, 34, true, CANDLE_COLS[candles], 0); }
   }
   const air = me.y < GY - 1;
+  if (me.pow > 0) {
+    const b = bud(), fade = Math.min(1, me.pow * 2);
+    if (b.toon === 'mbappe') { ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 3; for (let i = 0; i < 14; i++) { const y = 80 + hsh(i) * 360, x = W - ((T * 1600 + hsh(i + 3) * W) % (W + 200)); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 90, y); ctx.stroke(); } }
+    ctx.globalAlpha = fade; budKid(b, MX - 80, GY, { pose: 'run', ph: me.ph + 1.6 }); ctx.globalAlpha = 1;
+    ctx.fillStyle = b.col; rrect(MX - 80, 80, 160, 12, 6); ctx.fill(); ctx.fillStyle = '#fff'; rrect(MX - 80, 80, 160 * me.pow / 5, 12, 6); ctx.fill();
+  }
   if (!(me.stumble > 0 && Math.floor(T * 16) % 2)) kid(MX, me.y, { pose: air ? 'air' : 'run', ph: me.ph });
   drawBall(MX + 34, (air ? me.y : GY) - 13 - (air ? 0 : Math.abs(Math.sin(me.ph)) * 6), 13, dist * .07);
   drawParts(); hud();
@@ -525,14 +668,20 @@ function drawPenalty() {
   for (let x = GX1; x <= GX2; x += 20) { ctx.moveTo(x + ns * .3, GTOP); ctx.lineTo(x - ns * .3, GY); }
   for (let y = GTOP; y <= GY; y += 20) { ctx.moveTo(GX1, y + ns * .2); ctx.lineTo(GX2, y - ns * .2); }
   ctx.stroke();
-  kid(pen.kx, GY, { pose: 'keeper', face: -1, jersey: '#2BB673', num: '1', skin: '#E0AC69', skin2: '#C48F55', hair: '#4A2E1A', gloves: true });
+  kid(pen.kx, GY, { who: null, pose: 'keeper', face: -1, jersey: '#2BB673', num: '1', skin: '#E0AC69', skin2: '#C48F55', hair: '#4A2E1A', gloves: true });
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 10; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(GX1, GY); ctx.lineTo(GX1, GTOP); ctx.lineTo(GX2, GTOP); ctx.lineTo(GX2, GY); ctx.stroke();
+  const B = bud();
+  budKid(B, 150, GY, { pose: pen.phase === 'goal' ? 'happy' : 'stand' });
+  if (B.toon === 'yamal') for (let i = 0; i < 3; i++) kid(440 + i * 26, GY, { pose: 'keeper', who: null, face: -1, jersey: '#2BB673', num: ' ', skin: '#E0AC69', skin2: '#C48F55', hair: '#4A2E1A' });
   kid(250, GY, { pose: pen.phase === 'goal' ? 'happy' : pen.phase === 'shoot' && pen.p < .35 ? 'kick' : 'stand' });
+  if (pen.trail) { ctx.strokeStyle = 'rgba(255,143,171,.7)'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); pen.trail.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); }
+  if (swipe && swipe.pts.length > 1) { ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 8; ctx.lineCap = 'round'; ctx.beginPath(); swipe.pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); }
   if (pen.phase === 'aim') {
     const ax = aimX(), pu = 1 + Math.sin(T * 8) * .1;
     ctx.setLineDash([8, 10]); ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(pen.bx, pen.by); ctx.quadraticCurveTo((pen.bx + ax) / 2, AIMY - 80, ax, AIMY); ctx.stroke(); ctx.setLineDash([]);
     ctx.strokeStyle = '#FFD23F'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(ax, AIMY, 24 * pu, 0, TAU); ctx.stroke(); ctx.fillStyle = '#FFD23F'; circle(ax, AIMY, 6);
-    text('Ketuk untuk menendang!', 480, 150 + Math.sin(T * 4) * 4, 42, '#fff', { stroke: '#1D3557', sw: 9 });
+    text('Usap ke gawang untuk menendang!', 480, 132 + Math.sin(T * 4) * 4, 40, '#fff', { stroke: '#1D3557', sw: 9 });
+    text('Usap melengkung = tendangan pisang ala ' + (B.toon === 'yamal' ? 'Yamal' : 'Mbappé'), 480, 180, 24, '#FFD23F', { stroke: '#1D3557', sw: 6 });
   }
   drawBall(pen.bx, pen.by, pen.br, (pen.p || 0) * 12);
   if (pen.phase === 'goal') { const s = 1 + Math.max(0, .4 - pen.rt) * 1.5; ctx.save(); ctx.translate(480, 165); ctx.scale(s, s); text('GOOOL!', 0, 0, 100, '#FFD23F', { stroke: '#E63946', sw: 16 }); ctx.restore(); }
@@ -569,17 +718,22 @@ function drawFinale() {
   if (F.phase === 'blow') { const s = 1 + Math.sin(T * 5) * .05; ctx.save(); ctx.translate(480, 120); ctx.scale(s, s); text('Tiup lilinnya! Ketuk kuenya', 0, 0, 50, '#fff', { stroke: '#E63946', sw: 10 }); ctx.restore(); }
   if (F.phase === 'done') {
     const k = easeOut(F.msg); ctx.save(); ctx.globalAlpha = k; ctx.translate(0, (1 - k) * -30);
-    ctx.fillStyle = 'rgba(255,255,255,.96)'; rrect(120, 24, 720, 230, 28); ctx.fill();
-    text('Selamat ulang tahun ke-7, Mael!', 480, 74, 40, '#E63946');
-    text('Ayah sayang Mael. Peluk erat dari Linz.', 480, 122, 30, '#1D3557', { weight: 700 });
-    text(`Mael mengumpulkan ${stars} bintang`, 480, 162, 24, '#5C677D', { weight: 700 });
-    ctx.fillStyle = '#E63946'; rrect(400, 188, 160, 48, 24); ctx.fill(); text('Main lagi', 480, 213, 26, '#fff');
+    const fp = PH.keluarga, cx = fp ? 560 : 480;
+    ctx.fillStyle = 'rgba(255,255,255,.97)'; rrect(fp ? 60 : 110, 16, fp ? 840 : 740, 300, 28); ctx.fill();
+    if (fp) { ctx.save(); ctx.translate(166, 166); ctx.rotate(-.04); ctx.fillStyle = '#fff'; ctx.shadowColor = 'rgba(0,0,0,.25)'; ctx.shadowBlur = 12; ctx.fillRect(-92, -132, 184, 264); ctx.shadowBlur = 0; ctx.drawImage(fp, -84, -124, 168, 248); ctx.restore(); }
+    text('Selamat ulang tahun ke-7, Mael!', cx, 60, 40, '#E63946');
+    text('Semoga panjang umur, jadi anak sholih', cx, 108, 28, '#1D3557', { weight: 700 });
+    text('dan menyenangkan.', cx, 142, 28, '#1D3557', { weight: 700 });
+    text('Sampai ketemu lagi sama Baba!', cx, 186, 30, '#2BB673');
+    text(`${stars} bintang · ${cards} kartu pemain`, cx, 226, 22, '#5C677D', { weight: 700 });
+    ctx.fillStyle = '#E63946'; rrect(cx - 80, 250, 160, 48, 24); ctx.fill(); text('Main lagi', cx, 275, 26, '#fff');
     ctx.restore();
   }
 }
 
 // ---------- loop & input ----------
 function update(dt) {
+  if (slow > 0) { slow -= dt; dt *= .3; }
   T += dt; st += dt; shake = Math.max(0, shake - dt);
   if (state === 'run') updRun(dt);
   else if (state === 'penalty') updPenalty(dt);
@@ -592,7 +746,7 @@ function render() {
   ctx.setTransform(SC * DPR, 0, 0, SC * DPR, 0, 0); ctx.save();
   if (shake > 0) ctx.translate(rnd(-6, 6) * shake / .3, rnd(-4, 4) * shake / .3);
   if (state === 'title') drawTitle(); else if (state === 'intro') drawIntro(); else if (state === 'run') drawRun();
-  else if (state === 'fly') drawFly(); else if (state === 'penalty') drawPenalty(); else drawFinale();
+  else if (state === 'fly') drawFly(); else if (state === 'penalty') drawPenalty(); else if (state === 'card') drawCard(); else drawFinale();
   for (const f of floats) { ctx.globalAlpha = clamp(1 - f.t / 1.3, 0, 1); text(f.s, f.x, f.y, 36, f.col, { stroke: '#1D3557', sw: 8 }); }
   ctx.globalAlpha = 1;
   if (state === 'title' || state === 'finale') muteBtn();
@@ -615,12 +769,28 @@ function tap(x, y) {
   else if (state === 'fly') { if (st > 1.2) go('intro'); }
   else if (state === 'run') jump();
   else if (state === 'penalty') { if (pen.phase === 'aim' && st > .7) shoot(); }
+  else if (state === 'card') { if (st > 1.6) nextStage(); }
   else if (state === 'finale') {
     if (fin.phase === 'blow') blow();
-    else if (fin.phase === 'done' && fin.msg > .8 && x > 400 && x < 560 && y > 188 && y < 236) restart();
+    else if (fin.phase === 'done' && fin.msg > .8) { const cx = PH.keluarga ? 560 : 480; if (Math.abs(x - cx) < 80 && y > 250 && y < 298) restart(); }
   }
 }
-addEventListener('pointerdown', (e) => { e.preventDefault(); const r = cv.getBoundingClientRect(); tap((e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H); }, { passive: false });
+let swipe = null;
+const toXY = (e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H]; };
+addEventListener('pointerdown', (e) => {
+  e.preventDefault(); const [x, y] = toXY(e);
+  if (state === 'penalty' && pen.phase === 'aim' && st > .7) { audioInit(); swipe = { pts: [[x, y]] }; return; }
+  tap(x, y);
+}, { passive: false });
+addEventListener('pointermove', (e) => { if (swipe) swipe.pts.push(toXY(e)); });
+addEventListener('pointerup', () => {
+  if (!swipe) return; const P = swipe.pts; swipe = null;
+  if (state !== 'penalty' || pen.phase !== 'aim') return;
+  const [x0, y0] = P[0], [x1, y1] = P[P.length - 1], dx = x1 - x0, dy = y1 - y0, d = Math.hypot(dx, dy);
+  if (d < 40) { shoot(); return; } // a plain tap still shoots with the moving aim
+  const [mx, my] = P[Math.floor(P.length / 2)], bend = ((mx - x0) * dy - (my - y0) * dx) / d;
+  shoot({ x1, y1, dx, dy, bend });
+});
 addEventListener('keydown', (e) => { if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'Enter') { e.preventDefault(); if (!e.repeat) tap(W / 2, H / 2); } });
 addEventListener('dblclick', (e) => e.preventDefault());
 document.addEventListener('visibilitychange', () => { if (AC) document.hidden ? AC.suspend() : (!muted && AC.resume()); });

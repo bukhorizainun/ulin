@@ -13,7 +13,11 @@ const GAMES = [
 const $ = (id) => document.getElementById(id);
 const grid = $('grid'), player = $('player'), canvas = $('screen'), go = $('go');
 
-grid.innerHTML = GAMES.map((g) => `
+grid.innerHTML = `
+  <a class="card" href="mael/">
+    <img src="mael/og.png" width="256" height="240" alt="" loading="lazy" style="object-fit:cover;image-rendering:auto">
+    <div class="meta"><h3>Mael ke Linz</h3><p>Bola bareng Mbappé &amp; Yamal · 2026</p></div>
+  </a>` + GAMES.map((g) => `
   <a class="card" href="#/main/${g.id}">
     <img src="games/covers/${g.id}.png" width="256" height="240" alt="" loading="lazy">
     <div class="meta"><h3>${g.title}</h3><p>${g.genre} · ${g.year}</p></div>
