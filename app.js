@@ -14,6 +14,10 @@ const $ = (id) => document.getElementById(id);
 const grid = $('grid'), player = $('player'), canvas = $('screen'), go = $('go');
 
 grid.innerHTML = `
+  <a class="card" href="kancil/">
+    <img src="kancil/cover.png" width="256" height="240" alt="" loading="lazy" style="image-rendering:auto">
+    <div class="meta"><h3>Petualangan Si Kancil</h3><p>Petualangan · 2026</p></div>
+  </a>
   <a class="card" href="mael/">
     <img src="mael/og.png" width="256" height="240" alt="" loading="lazy" style="object-fit:cover;image-rendering:auto">
     <div class="meta"><h3>Mael ke Linz</h3><p>Bola bareng Mbappé &amp; Yamal · 2026</p></div>
@@ -24,6 +28,7 @@ grid.innerHTML = `
   </a>`).join('');
 $('credits').innerHTML = GAMES.map((g) =>
   `<li>${g.title} oleh ${g.author} (${g.license}). <a href="${g.src}" target="_blank" rel="noopener">Kode sumber</a></li>`).join('') +
+  '<li>Petualangan Si Kancil dan Mael ke Linz: dibuat untuk Ulin, gambar dan suara dari kode.</li>' +
   '<li>Emulator jsnes oleh Ben Firshman dkk. (Apache-2.0). <a href="https://github.com/bfirshman/jsnes" target="_blank" rel="noopener">Kode sumber</a></li>';
 
 // ---------- toast ----------
