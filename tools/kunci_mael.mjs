@@ -7,7 +7,8 @@ import { createInterface } from 'node:readline/promises';
 import { webcrypto as crypto } from 'node:crypto';
 
 const ITER = 600000;
-let pw = process.argv[2];
+const CHECK = process.argv[2] === '--cek'; // only test a password against mael/index.html
+let pw = CHECK ? null : process.argv[2];
 if (!pw) {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   pw = (await rl.question('Password untuk game Mael: ')).trim();
@@ -16,6 +17,16 @@ if (!pw) {
 if (pw.length < 4) { console.error('Password minimal 4 karakter.'); process.exit(1); }
 
 const root = new URL('..', import.meta.url);
+if (CHECK) {
+  const html = readFileSync(new URL('mael/index.html', root), 'utf8');
+  const get = (k) => Buffer.from(html.match(new RegExp(k + ": '([^']+)'"))[1], 'base64');
+  const b = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+  const k = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: get('salt'), iterations: ITER, hash: 'SHA-256' }, b, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  try { await crypto.subtle.decrypt({ name: 'AES-GCM', iv: get('iv') }, k, get('ct')); console.log('COCOK: password ini membuka game.'); }
+  catch (_) { console.log('TIDAK COCOK: password ini tidak membuka mael/index.html.'); }
+  if (/[&#%+\s]/.test(pw)) console.log('Catatan: password mengandung & # % + atau spasi. Ketik di kotak, jangan lewat link #p=.');
+  process.exit(0);
+}
 const game = readFileSync(new URL('_mael_src/index.html', root));
 const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
 const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
