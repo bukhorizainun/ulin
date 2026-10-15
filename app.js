@@ -14,6 +14,10 @@ const $ = (id) => document.getElementById(id);
 const grid = $('grid'), player = $('player'), canvas = $('screen'), go = $('go');
 
 grid.innerHTML = `
+  <a class="card" href="racik/">
+    <img src="racik/cover.png" width="256" height="240" alt="" loading="lazy" style="image-rendering:auto">
+    <div class="meta"><h3>Racik Nusantara</h3><p>Teka-teki · 2026</p></div>
+  </a>
   <a class="card" href="kancil/">
     <img src="kancil/cover.png" width="256" height="240" alt="" loading="lazy" style="image-rendering:auto">
     <div class="meta"><h3>Petualangan Si Kancil</h3><p>Petualangan · 2026</p></div>
@@ -28,7 +32,7 @@ grid.innerHTML = `
   </a>`).join('');
 $('credits').innerHTML = GAMES.map((g) =>
   `<li>${g.title} oleh ${g.author} (${g.license}). <a href="${g.src}" target="_blank" rel="noopener">Kode sumber</a></li>`).join('') +
-  '<li>Petualangan Si Kancil dan Mael ke Linz: dibuat untuk Ulin, gambar dan suara dari kode.</li>' +
+  '<li>Petualangan Si Kancil, Racik Nusantara, dan Mael ke Linz: dibuat untuk Ulin. Gambar dan suara dari kode; ikon Racik memakai emoji perangkat.</li>' +
   '<li>Emulator jsnes oleh Ben Firshman dkk. (Apache-2.0). <a href="https://github.com/bfirshman/jsnes" target="_blank" rel="noopener">Kode sumber</a></li>';
 
 // ---------- toast ----------

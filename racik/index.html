@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Racik Nusantara</title>
+<meta name="description" content="Gabungkan air, api, tanah, dan udara sampai menemukan batik, angklung, komodo, dan 71 unsur Nusantara.">
+<meta property="og:title" content="Racik Nusantara">
+<meta property="og:description" content="Gabungkan unsur, temukan Nusantara: dari air dan api sampai batik, gamelan, dan komodo.">
+<meta property="og:image" content="https://bukhorizainun.github.io/ulin/racik/og.png">
+<meta name="theme-color" content="#1B1838">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1B1838;--bg2:#24204A;--panel:#2C2757;--line:rgba(255,255,255,.14);--ink:#F7F1E3;--muted:#B9B3D6;--gold:#F2C14E;--red:#E5484D;--green:#30A46C;--r:16px}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Baloo 2",system-ui,sans-serif;overflow:hidden}
+body{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+#app{position:fixed;inset:0;display:grid;grid-template-columns:1fr minmax(250px,34vw);grid-template-rows:100%}
+@media (orientation:portrait){#app{grid-template-columns:100%;grid-template-rows:1fr 40%}}
+/* workspace with a quiet kawung-like pattern */
+#ws{position:relative;overflow:hidden;background:
+  radial-gradient(circle at 25% 25%,rgba(242,193,78,.05) 0 18%,transparent 19%) 0 0/64px 64px,
+  radial-gradient(circle at 75% 75%,rgba(242,193,78,.05) 0 18%,transparent 19%) 0 0/64px 64px,var(--bg)}
+#top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:8px;padding:max(10px,env(safe-area-inset-top)) 12px 8px max(12px,env(safe-area-inset-left));z-index:5;pointer-events:none}
+#top>*{pointer-events:auto}
+.back{color:var(--muted);text-decoration:none;font-weight:700;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.06)}
+h1{margin:0 0 0 4px;font-size:clamp(20px,3.2vw,28px);line-height:1;color:var(--gold);font-weight:800;white-space:nowrap}
+#count{margin-left:auto;font-weight:800;background:rgba(255,255,255,.08);padding:4px 12px;border-radius:999px;white-space:nowrap}
+#tools{position:absolute;left:max(10px,env(safe-area-inset-left));bottom:max(10px,env(safe-area-inset-bottom));display:flex;gap:8px;z-index:5}
+.tool{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:var(--panel);border:1px solid var(--line);font-size:26px;line-height:1;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.tool span{font-size:12px;font-weight:700;color:var(--muted);margin-top:-2px}
+.tool:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+/* elements */
+.it{position:absolute;left:0;top:0;width:88px;display:flex;flex-direction:column;align-items:center;gap:0;touch-action:none;cursor:grab;z-index:2;will-change:transform}
+.it .ic{width:64px;height:64px;display:grid;place-items:center;font-size:42px;line-height:1;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid var(--line);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.it .nm{font-weight:700;font-size:15px;text-align:center;line-height:1.1;margin-top:3px;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.it.drag{cursor:grabbing;z-index:20}
+.it.drag .ic{transform:scale(1.12);box-shadow:0 12px 24px rgba(0,0,0,.4)}
+.it.target .ic{border-color:var(--gold);box-shadow:0 0 0 4px rgba(242,193,78,.35)}
+.it.pop .ic{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.it.new .ic{background:rgba(242,193,78,.18);border-color:var(--gold)}
+.it.shake{animation:shake .4s}
+@keyframes pop{0%{transform:scale(.2)}100%{transform:scale(1)}}
+@keyframes shake{20%{translate:-6px 0}40%{translate:6px 0}60%{translate:-4px 0}80%{translate:4px 0}}
+.flag{display:inline-block;width:1.25em;height:.84em;background:linear-gradient(#E70011 50%,#fff 50%);border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+/* library */
+#lib{display:flex;flex-direction:column;background:var(--bg2);border-left:1px solid var(--line);min-height:0}
+@media (orientation:portrait){#lib{border-left:0;border-top:1px solid var(--line)}}
+#libhead{display:flex;align-items:center;gap:8px;padding:10px 12px 6px}
+#libhead b{font-size:18px}
+#libhead small{color:var(--muted);font-weight:600}
+#grid{flex:1;overflow-y:auto;touch-action:pan-y;display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:6px;padding:4px 10px max(12px,env(safe-area-inset-bottom));align-content:start;-webkit-overflow-scrolling:touch}
+.tile{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border-radius:14px;touch-action:pan-y;cursor:pointer}
+.tile:active,.tile.on{background:rgba(255,255,255,.08)}
+@media (orientation:portrait){
+  #grid{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:84px;grid-template-rows:repeat(3,max-content);overflow-x:auto;overflow-y:hidden;touch-action:pan-x}
+  .tile{touch-action:pan-x}
+}
+.tile .ic{font-size:36px;line-height:1.15;height:44px;display:grid;place-items:center}
+.tile .nm{font-size:14px;font-weight:700;text-align:center;line-height:1.1}
+.tile.fresh .nm{color:var(--gold)}
+/* toast, cards, hand */
+#toast{position:absolute;left:50%;top:64px;translate:-50% 0;z-index:30;background:#FFF8E6;color:#2B2250;border-radius:18px;padding:10px 16px;font-weight:700;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:min(92%,460px);display:none;text-align:center}
+#toast b{color:#B5361F}
+.veil{position:fixed;inset:0;z-index:40;background:rgba(10,8,30,.62);display:none;place-items:center;padding:16px}
+.card{width:min(560px,100%);max-height:88vh;overflow:auto;background:#FFF8E6;color:#2B2250;border-radius:24px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.45);touch-action:pan-y}
+.card h2{margin:0 0 4px;font-size:26px}
+.card p{margin:6px 0;font-size:17px;line-height:1.45}
+.card .big{font-size:84px;line-height:1.1;text-align:center}
+.card .from{color:#6A6390;font-weight:700}
+.card .close{display:block;margin:14px auto 0;background:#2B2250;color:#fff;padding:10px 28px;border-radius:999px;font-weight:800;font-size:18px}
+#ency{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px;margin-top:10px}
+#ency button{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border-radius:12px;background:#F2E8CF}
+#ency button[disabled]{opacity:.45}
+#ency .ic{font-size:30px;line-height:1.2}
+#ency .nm{font-size:13px;font-weight:700;line-height:1.1}
+#hand{position:fixed;z-index:35;font-size:46px;pointer-events:none;display:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+#tip{position:absolute;left:50%;bottom:90px;translate:-50% 0;z-index:6;color:var(--gold);font-weight:800;font-size:20px;text-align:center;pointer-events:none;display:none;text-shadow:0 2px 4px rgba(0,0,0,.6)}
+.spark{position:absolute;z-index:25;width:8px;height:8px;border-radius:50%;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.it.pop .ic,.it.shake{animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <main id="ws" aria-label="Papan racik">
+    <div id="top"><a class="back" href="../">← Ulin</a><h1>Racik Nusantara</h1><div id="count">4 / 71</div></div>
+    <div id="tools">
+      <button class="tool" id="bHint" aria-label="Petunjuk">💡<span>Petunjuk</span></button>
+      <button class="tool" id="bBook" aria-label="Ensiklopedia">📖<span>Buku</span></button>
+      <button class="tool" id="bClean" aria-label="Rapikan">🧹<span>Rapikan</span></button>
+      <button class="tool" id="bSound" aria-label="Suara">🔊<span>Suara</span></button>
+    </div>
+    <div id="toast"></div>
+    <div id="tip"></div>
+  </main>
+  <aside id="lib"><div id="libhead"><b>Unsur</b><small>ketuk atau seret ke papan</small></div><div id="grid"></div></aside>
+</div>
+<div class="veil" id="veil"><div class="card" id="card"></div></div>
+<div id="hand">👆</div>
+<script>
+'use strict';
+// Racik Nusantara: combine elements to discover Indonesia. Original recipes and texts written for Ulin.
+const E = {
+  air: ['Air', '💧', 'Semua makhluk hidup butuh air. Tubuh kita sebagian besar berisi air.'],
+  api: ['Api', '🔥', 'Api butuh tiga hal: bahan bakar, udara, dan panas.'],
+  tanah: ['Tanah', '🟫', 'Tanah adalah tempat tumbuhan berakar dan mengambil makanan.'],
+  udara: ['Udara', '🌬️', 'Udara tidak terlihat, tetapi kita menghirupnya setiap saat.'],
+  uap: ['Uap', '♨️', 'Air yang dipanaskan berubah menjadi uap dan naik ke atas.'],
+  lumpur: ['Lumpur', '🟤', 'Campuran tanah dan air. Kerbau suka berendam di lumpur supaya tetap sejuk.'],
+  batu: ['Batu', '🪨', 'Banyak batu terbentuk dari lava gunung berapi yang mendingin.'],
+  awan: ['Awan', '☁️', 'Awan adalah kumpulan titik air yang sangat kecil di langit.'],
+  gunung: ['Gunung', '⛰️', 'Indonesia punya banyak gunung. Puncak Jaya di Papua adalah yang tertinggi.'],
+  laut: ['Laut', '🌊', 'Wilayah laut Indonesia jauh lebih luas daripada daratannya.'],
+  asap: ['Asap', '💨', 'Asap muncul ketika sesuatu terbakar. Jangan dihirup, ya!'],
+  angin: ['Angin', '🍃', 'Angin adalah udara yang bergerak.'],
+  matahari: ['Matahari', '☀️', 'Matahari adalah bintang yang paling dekat dengan Bumi.'],
+  hujan: ['Hujan', '🌧️', 'Titik air di awan bergabung, menjadi berat, lalu jatuh sebagai hujan.'],
+  petir: ['Petir', '🌩️', 'Kilat terjadi karena muatan listrik di dalam awan. Suara gunturnya datang belakangan.'],
+  logam: ['Logam', '⚙️', 'Logam didapat dari batuan yang dipanaskan sangat tinggi.'],
+  listrik: ['Listrik', '⚡', 'Listrik menyalakan lampu, kipas, dan tablet yang kamu pegang.'],
+  pasir: ['Pasir', '🏜️', 'Pasir adalah butiran batu yang sangat kecil.'],
+  kaca: ['Kaca', '🪟', 'Kaca dibuat dari pasir yang dilelehkan dengan panas yang sangat tinggi.'],
+  lampu: ['Lampu', '💡', 'Lampu mengubah listrik menjadi cahaya.'],
+  gunungapi: ['Gunung Api', '🌋', 'Indonesia punya sekitar 127 gunung api aktif, terbanyak di dunia.'],
+  pulau: ['Pulau', '🏝️', 'Daratan yang dikelilingi air dari segala sisi.'],
+  indonesia: ['Indonesia', 'FLAG', 'Negara kepulauan dengan lebih dari 17 ribu pulau. Merah putih!'],
+  pelangi: ['Pelangi', '🌈', 'Cahaya matahari dibiaskan butir hujan menjadi banyak warna.'],
+  tumbuhan: ['Tumbuhan', '🌱', 'Tumbuhan membuat makanannya sendiri dengan bantuan cahaya matahari.'],
+  pohon: ['Pohon', '🌳', 'Pohon menghasilkan oksigen yang kita hirup.'],
+  hutan: ['Hutan', '🌲', 'Hutan hujan Indonesia menjadi rumah bagi banyak hewan langka.'],
+  kehidupan: ['Kehidupan', '🦠', 'Ilmuwan pernah menguji dugaan bahwa bahan kehidupan pertama terbentuk dari "sup" purba yang tersambar petir.'],
+  ikan: ['Ikan', '🐟', 'Ikan bernapas dengan insang.'],
+  cacing: ['Cacing', '🪱', 'Cacing tanah membuat tanah gembur dan subur.'],
+  burung: ['Burung', '🐦', 'Burung punya bulu dan tulang yang ringan supaya bisa terbang.'],
+  bunga: ['Bunga', '🌺', 'Bunga menarik lebah dan kupu-kupu dengan warna dan wanginya.'],
+  lebah: ['Lebah', '🐝', 'Lebah membantu bunga berbuah dengan membawa serbuk sari.'],
+  madu: ['Madu', '🍯', 'Lebah membuat madu dari sari bunga.'],
+  garuda: ['Garuda', '🦅', 'Burung legenda. Garuda Pancasila adalah lambang negara Indonesia.'],
+  orangutan: ['Orangutan', '🦧', 'Kera besar yang hanya hidup di Sumatra dan Kalimantan.'],
+  komodo: ['Komodo', '🦎', 'Kadal terbesar di dunia, hidup di Pulau Komodo dan sekitarnya di NTT.'],
+  harimau: ['Harimau', '🐅', 'Harimau sumatra adalah harimau terakhir yang masih hidup di Indonesia.'],
+  buaya: ['Buaya', '🐊', 'Ingat dongeng Si Kancil yang menghitung buaya untuk menyeberang sungai?'],
+  manusia: ['Manusia', '🧒', 'Itu kamu! Manusia bisa berpikir, bercerita, dan menciptakan.'],
+  alat: ['Alat', '🔨', 'Manusia memakai alat untuk memudahkan pekerjaan.'],
+  kayu: ['Kayu', '🪵', 'Kayu dipakai untuk membuat rumah, perahu, dan kertas.'],
+  perahu: ['Perahu', '⛵', 'Pinisi adalah kapal layar tradisional buatan orang Bugis.'],
+  kapal: ['Kapal', '🚢', 'Kapal besar menghubungkan pulau-pulau di Indonesia.'],
+  kertas: ['Kertas', '📄', 'Kertas dibuat dari serat kayu yang dihancurkan lalu dikeringkan.'],
+  buku: ['Buku', '📖', 'Buku adalah jendela dunia. Ayo terus membaca!'],
+  rumah: ['Rumah', '🏠', 'Rumah adat Indonesia banyak sekali, misalnya rumah gadang dan honai.'],
+  desa: ['Desa', '🏘️', 'Di desa, warga saling membantu dengan gotong royong.'],
+  kota: ['Kota', '🏙️', 'Kota adalah tempat banyak orang tinggal dan bekerja.'],
+  musik: ['Musik', '🎵', 'Musik adalah bunyi yang disusun supaya enak didengar.'],
+  gamelan: ['Gamelan', '🎶', 'Musik tradisional Jawa dan Bali dari gong, saron, bonang, dan kendang.'],
+  bambu: ['Bambu', '🎋', 'Bambu adalah tumbuhan yang tumbuh sangat cepat.'],
+  angklung: ['Angklung', '🎐', 'Alat musik bambu dari Jawa Barat yang dimainkan dengan digoyang. Diakui UNESCO.'],
+  layang: ['Layang-layang', '🪁', 'Layang-layang terbang karena didorong angin.'],
+  kain: ['Kain', '🧵', 'Kain ditenun dari benang.'],
+  lilin: ['Lilin', '🕯️', 'Lilin lebah (malam) dipakai untuk membatik.'],
+  batik: ['Batik', '👘', 'Kain digambar dengan lilin panas memakai canting, lalu dicelup warna. Warisan budaya dunia dari Indonesia.'],
+  padi: ['Padi', '🌾', 'Padi adalah tanaman yang menghasilkan beras.'],
+  sawah: ['Sawah', '🏞️', 'Sawah terasering di Bali diatur bersama lewat sistem subak.'],
+  nasi: ['Nasi', '🍚', 'Beras yang dimasak menjadi nasi, makanan pokok sebagian besar orang Indonesia.'],
+  nasigoreng: ['Nasi Goreng', '🍛', 'Nasi yang digoreng dengan bumbu. Banyak orang suka untuk sarapan.'],
+  kerupuk: ['Kerupuk', '🍘', 'Adonan kerupuk dijemur di bawah matahari sebelum digoreng.'],
+  teh: ['Teh', '🍵', 'Teh dibuat dari daun yang diseduh air panas.'],
+  ayam: ['Ayam', '🐔', 'Ayam jantan berkokok di pagi hari.'],
+  telur: ['Telur', '🥚', 'Telur kaya protein yang membantu tubuh tumbuh.'],
+  sate: ['Sate', '🍢', 'Potongan daging yang ditusuk lalu dibakar, enak dengan bumbu kacang.'],
+  petani: ['Petani', '🧑‍🌾', 'Petani menanam padi supaya kita bisa makan nasi. Terima kasih, Pak Tani!'],
+  nelayan: ['Nelayan', '🎣', 'Nelayan berangkat melaut untuk menangkap ikan.'],
+  kerbau: ['Kerbau', '🐃', 'Kerbau membantu petani membajak sawah.'],
+  wayang: ['Wayang', '🎭', 'Wayang kulit dimainkan dalang di balik layar dengan lampu, sehingga muncul bayangan.'],
+  kancil: ['Si Kancil', '🦌', 'Hewan kecil yang cerdik dari dongeng Nusantara. Kancil sungguhan adalah salah satu hewan berkuku terkecil di dunia.'],
+};
+const R = {};
+const add = (a, b, c) => { R[[a, b].sort().join('+')] = c; };
+[
+  ['air', 'api', 'uap'], ['air', 'tanah', 'lumpur'], ['api', 'tanah', 'batu'], ['air', 'udara', 'awan'], ['tanah', 'tanah', 'gunung'],
+  ['air', 'air', 'laut'], ['api', 'udara', 'asap'], ['udara', 'udara', 'angin'], ['api', 'api', 'matahari'],
+  ['awan', 'air', 'hujan'], ['awan', 'api', 'petir'], ['batu', 'api', 'logam'], ['logam', 'petir', 'listrik'], ['batu', 'air', 'pasir'],
+  ['pasir', 'api', 'kaca'], ['listrik', 'kaca', 'lampu'], ['gunung', 'api', 'gunungapi'], ['laut', 'tanah', 'pulau'], ['pulau', 'pulau', 'indonesia'],
+  ['matahari', 'hujan', 'pelangi'], ['tanah', 'hujan', 'tumbuhan'], ['tumbuhan', 'tumbuhan', 'pohon'], ['pohon', 'pohon', 'hutan'],
+  ['petir', 'lumpur', 'kehidupan'], ['kehidupan', 'laut', 'ikan'], ['kehidupan', 'lumpur', 'cacing'], ['kehidupan', 'udara', 'burung'],
+  ['tumbuhan', 'matahari', 'bunga'], ['bunga', 'kehidupan', 'lebah'], ['lebah', 'bunga', 'madu'], ['burung', 'matahari', 'garuda'],
+  ['pohon', 'kehidupan', 'orangutan'], ['pulau', 'kehidupan', 'komodo'], ['hutan', 'kehidupan', 'harimau'], ['ikan', 'lumpur', 'buaya'],
+  ['kehidupan', 'tanah', 'manusia'], ['manusia', 'batu', 'alat'], ['pohon', 'alat', 'kayu'], ['kayu', 'laut', 'perahu'], ['perahu', 'logam', 'kapal'],
+  ['kayu', 'air', 'kertas'], ['kertas', 'kertas', 'buku'], ['manusia', 'kayu', 'rumah'], ['rumah', 'rumah', 'desa'], ['desa', 'desa', 'kota'],
+  ['manusia', 'udara', 'musik'], ['musik', 'logam', 'gamelan'], ['tumbuhan', 'angin', 'bambu'], ['musik', 'bambu', 'angklung'],
+  ['kertas', 'bambu', 'layang'], ['kertas', 'angin', 'layang'], ['manusia', 'tumbuhan', 'kain'], ['lebah', 'api', 'lilin'], ['kain', 'lilin', 'batik'],
+  ['tumbuhan', 'lumpur', 'padi'], ['padi', 'air', 'sawah'], ['padi', 'api', 'nasi'], ['nasi', 'api', 'nasigoreng'], ['nasi', 'matahari', 'kerupuk'],
+  ['tumbuhan', 'uap', 'teh'], ['burung', 'rumah', 'ayam'], ['ayam', 'ayam', 'telur'], ['ayam', 'api', 'sate'], ['manusia', 'sawah', 'petani'],
+  ['manusia', 'laut', 'nelayan'], ['sawah', 'kehidupan', 'kerbau'], ['kerbau', 'lampu', 'wayang'], ['hutan', 'buku', 'kancil'],
+].forEach(([a, b, c]) => add(a, b, c));
+const FROM = {}; for (const [k, v] of Object.entries(R)) if (!FROM[v]) FROM[v] = k.split('+');
+const TOTAL = Object.keys(E).length, BASE = ['air', 'api', 'tanah', 'udara'];
+
+// ---------- save ----------
+let S = { found: [...BASE], muted: false, tutorial: true, fresh: [] };
+try { S = Object.assign(S, JSON.parse(localStorage.getItem('racik-v1') || '{}')); } catch (_) {}
+S.found = S.found.filter((k) => E[k]);
+const save = () => { try { localStorage.setItem('racik-v1', JSON.stringify(S)); } catch (_) {} };
+
+// ---------- sound ----------
+let AC = null;
+function tone(f, d, type = 'triangle', v = .12, delay = 0, to = 0) {
+  if (S.muted) return;
+  try {
+    if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state !== 'running') AC.resume();
+    const t = AC.currentTime + delay, o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t); if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05);
+  } catch (_) {}
+}
+const sfx = {
+  pick() { tone(520, .06, 'square', .04); },
+  drop() { tone(300, .08, 'sine', .08); },
+  same() { tone(660, .12); tone(880, .14, 'triangle', .1, .07); },
+  found() { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .2, 'triangle', .13, i * .07)); },
+  nope() { tone(220, .18, 'sawtooth', .06, 0, 140); },
+};
+const buzz = (ms = 10) => { if (navigator.vibrate) try { navigator.vibrate(ms); } catch (_) {} };
+
+// ---------- DOM helpers ----------
+const $ = (id) => document.getElementById(id);
+const ws = $('ws'), grid = $('grid');
+const icon = (k) => (E[k][1] === 'FLAG' ? '<span class="flag"></span>' : E[k][1]);
+function renderLib() {
+  const list = [...S.found].sort((a, b) => E[a][0].localeCompare(E[b][0], 'id'));
+  grid.innerHTML = list.map((k) => `<div class="tile${S.fresh.includes(k) ? ' fresh' : ''}" data-k="${k}"><div class="ic">${icon(k)}</div><div class="nm">${E[k][0]}</div></div>`).join('');
+  $('count').textContent = `${S.found.length} / ${TOTAL}`;
+}
+
+// ---------- workspace items ----------
+let items = [];
+function wsRect() { return ws.getBoundingClientRect(); }
+function place(el, x, y) { el._x = x; el._y = y; el.style.transform = `translate(${x - 44}px,${y - 38}px)`; }
+function makeItem(k, x, y, cls = '') {
+  const el = document.createElement('div'); el.className = 'it ' + cls; el.dataset.k = k;
+  el.innerHTML = `<div class="ic">${icon(k)}</div><div class="nm">${E[k][0]}</div>`;
+  ws.appendChild(el); place(el, x, y); items.push(el);
+  el.addEventListener('pointerdown', (e) => startDrag(e, el, false));
+  if (items.length > 40) removeItem(items[0]);
+  return el;
+}
+function removeItem(el) { items = items.filter((i) => i !== el); el.remove(); }
+function freeSpot() {
+  const r = wsRect(), pad = 70;
+  for (let t = 0; t < 60; t++) {
+    const x = pad + Math.random() * Math.max(10, r.width - 2 * pad), y = 90 + Math.random() * Math.max(10, r.height - 200);
+    if (items.every((i) => Math.hypot(i._x - x, i._y - y) > 90)) return [x, y];
+  }
+  return [r.width / 2 + (Math.random() - .5) * 80, r.height / 2 + (Math.random() - .5) * 80];
+}
+function nearest(el) {
+  let best = null, bd = 64;
+  for (const o of items) { if (o === el) continue; const d = Math.hypot(o._x - el._x, o._y - el._y); if (d < bd) { bd = d; best = o; } }
+  return best;
+}
+
+// ---------- dragging (pointer events: same code for touch and mouse) ----------
+let drag = null;
+function startDrag(e, el, fromLib) {
+  e.preventDefault(); e.stopPropagation(); hideHand();
+  const r = wsRect();
+  drag = { el, id: e.pointerId, sx: e.clientX, sy: e.clientY, moved: false, fromLib, dx: el._x - (e.clientX - r.left), dy: el._y - (e.clientY - r.top) };
+  el.classList.add('drag'); ws.appendChild(el); sfx.pick();
+  try { el.setPointerCapture(e.pointerId); } catch (_) {}
+}
+addEventListener('pointermove', (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const r = wsRect();
+  if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 8) drag.moved = true;
+  place(drag.el, e.clientX - r.left + drag.dx, e.clientY - r.top + drag.dy);
+  const n = nearest(drag.el); for (const o of items) o.classList.toggle('target', o === n);
+});
+function endDrag(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  const { el, moved, fromLib } = drag; drag = null; el.classList.remove('drag');
+  for (const o of items) o.classList.remove('target');
+  const r = wsRect(), inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+  if (fromLib && !moved) { const [x, y] = freeSpot(); el.style.transition = 'transform .25s ease-out'; place(el, x, y); setTimeout(() => (el.style.transition = ''), 260); sfx.drop(); return; }
+  if (!inside) { removeItem(el); return; }
+  const n = nearest(el);
+  if (n) combine(el, n); else sfx.drop();
+}
+addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
+
+// Library: a tile spawns a workspace item under the finger and starts dragging it.
+// A tap places it on a free spot; a vertical swipe still scrolls the list.
+grid.addEventListener('pointerdown', (e) => {
+  const t = e.target.closest('.tile'); if (!t) return;
+  const k = t.dataset.k, sx = e.clientX, sy = e.clientY, pid = e.pointerId;
+  let started = false;
+  const mv = (m) => {
+    if (m.pointerId !== pid || started) return;
+    const dx = m.clientX - sx, dy = m.clientY - sy;
+    const portrait = matchMedia('(orientation:portrait)').matches; // the list scrolls sideways in portrait, up/down in landscape
+    if (portrait ? Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy) * 1.3 : Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx) * 1.3) { cleanup(); return; }
+    if (Math.hypot(dx, dy) > 10) { started = true; cleanup(); spawnDrag(m, k, true); }
+  };
+  const up = (u) => { if (u.pointerId !== pid) return; cleanup(); if (u.type === 'pointerup' && !started) { const [x, y] = freeSpot(); const el = makeItem(k, x, y, 'pop'); sfx.drop(); hideHand(); setTimeout(() => el.classList.remove('pop'), 500); } };
+  const cleanup = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); removeEventListener('pointercancel', up); };
+  addEventListener('pointermove', mv); addEventListener('pointerup', up); addEventListener('pointercancel', up);
+});
+function spawnDrag(e, k, fromLib) {
+  const r = wsRect(), el = makeItem(k, e.clientX - r.left, e.clientY - r.top);
+  drag = { el, id: e.pointerId, sx: e.clientX, sy: e.clientY, moved: true, fromLib, dx: 0, dy: 0 };
+  el.classList.add('drag'); sfx.pick(); hideHand();
+}
+// double tap a workspace item to copy it
+ws.addEventListener('dblclick', (e) => { const el = e.target.closest('.it'); if (el) { const c = makeItem(el.dataset.k, el._x + 40, el._y + 20, 'pop'); setTimeout(() => c.classList.remove('pop'), 500); } });
+
+// ---------- combining ----------
+function combine(a, b) {
+  const k = R[[a.dataset.k, b.dataset.k].sort().join('+')];
+  if (!k) { for (const el of [a, b]) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); } sfx.nope(); toast('Hmm, belum jadi apa-apa. Coba pasangan lain!'); place(a, a._x + 40, a._y + 30); return; }
+  const x = (a._x + b._x) / 2, y = (a._y + b._y) / 2; removeItem(a); removeItem(b);
+  const isNew = !S.found.includes(k), el = makeItem(k, x, y, 'pop' + (isNew ? ' new' : ''));
+  sparks(x, y, isNew ? 22 : 10); buzz(isNew ? 25 : 10);
+  setTimeout(() => el.classList.remove('pop'), 500);
+  if (isNew) {
+    S.found.push(k); S.fresh = [k, ...S.fresh].slice(0, 3); S.tutorial = false; save(); renderLib(); sfx.found(); hideTip();
+    if (S.found.length === TOTAL) setTimeout(finale, 900);
+    else if (S.found.length <= 8) showCard(k, true);
+    else toast(`Baru! ${E[k][1] === 'FLAG' ? '' : E[k][1] + ' '}<b>${E[k][0]}</b>. ${E[k][2]}`, 5200);
+  } else { sfx.same(); toast(`${E[k][0]} lagi!`); }
+}
+function sparks(x, y, n) {
+  const cols = ['#F2C14E', '#E5484D', '#30A46C', '#7FB3FF', '#fff'];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div'), a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 70;
+    s.className = 'spark'; s.style.background = cols[i % cols.length]; s.style.left = x + 'px'; s.style.top = y + 'px'; ws.appendChild(s);
+    s.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d - 4}px,${Math.sin(a) * d - 4}px) scale(.3)`, opacity: 0 }], { duration: 650, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => s.remove();
+  }
+}
+let toastT = 0;
+function toast(html, ms = 2200) { const t = $('toast'); t.innerHTML = html; t.style.display = 'block'; clearTimeout(toastT); toastT = setTimeout(() => (t.style.display = 'none'), ms); }
+
+// ---------- cards: discovery, encyclopedia, hint, finale ----------
+const veil = $('veil'), card = $('card');
+function open(html) { card.innerHTML = html + '<button class="close" id="cClose">Oke!</button>'; veil.style.display = 'grid'; $('cClose').onclick = close; }
+function close() { veil.style.display = 'none'; }
+veil.addEventListener('pointerdown', (e) => { if (e.target === veil) close(); });
+function recipeText(k) { const f = FROM[k]; return f ? `Dibuat dari ${icon(f[0])} ${E[f[0]][0]} + ${icon(f[1])} ${E[f[1]][0]}` : 'Unsur dasar'; }
+function showCard(k, isNew) {
+  open(`${isNew ? '<p class="from" style="text-align:center;color:#B5361F">Penemuan baru!</p>' : ''}<div class="big">${icon(k)}</div><h2 style="text-align:center">${E[k][0]}</h2><p>${E[k][2]}</p><p class="from">${recipeText(k)}</p>`);
+}
+$('bBook').onclick = () => {
+  const all = Object.keys(E);
+  open(`<h2>Buku Racik</h2><p class="from">${S.found.length} dari ${TOTAL} unsur sudah ditemukan</p><div id="ency">${all.map((k) => S.found.includes(k)
+    ? `<button data-k="${k}"><span class="ic">${icon(k)}</span><span class="nm">${E[k][0]}</span></button>`
+    : '<button disabled><span class="ic">❔</span><span class="nm">???</span></button>').join('')}</div>`);
+  $('ency').onclick = (e) => { const b = e.target.closest('button[data-k]'); if (b) showCard(b.dataset.k, false); };
+};
+let hintStep = 0, hintFor = null;
+$('bHint').onclick = () => {
+  const cand = Object.entries(R).filter(([pair, c]) => !S.found.includes(c) && pair.split('+').every((p) => S.found.includes(p)));
+  if (!cand.length) { toast('Semua sudah ketemu. Hebat!'); return; }
+  if (!hintFor || S.found.includes(hintFor[1])) { hintFor = cand[Math.floor(Math.random() * cand.length)]; hintStep = 0; }
+  const [a, b] = hintFor[0].split('+'); hintStep++;
+  if (hintStep === 1) toast(`💡 Coba pakai ${icon(a)} <b>${E[a][0]}</b>…`, 4000);
+  else toast(`💡 Gabungkan ${icon(a)} <b>${E[a][0]}</b> dengan ${icon(b)} <b>${E[b][0]}</b>!`, 5000);
+};
+$('bClean').onclick = () => { for (const el of [...items]) removeItem(el); sfx.drop(); };
+const soundIcon = () => { $('bSound').firstChild.textContent = S.muted ? '🔇' : '🔊'; };
+$('bSound').onclick = () => { S.muted = !S.muted; save(); soundIcon(); if (!S.muted) sfx.same(); };
+function finale() {
+  sfx.found(); setTimeout(sfx.found, 500);
+  open('<div class="big">🎉</div><h2 style="text-align:center">Semua unsur ditemukan!</h2><p style="text-align:center">Kamu sudah meracik Nusantara: dari setetes air sampai batik, gamelan, dan Si Kancil. Hebat sekali!</p>');
+}
+
+// ---------- tutorial: an animated hand shows the first drag ----------
+const hand = $('hand'), tip = $('tip');
+let handAnim = null;
+function hideHand() { if (handAnim) { handAnim.cancel(); handAnim = null; } hand.style.display = 'none'; }
+function hideTip() { tip.style.display = 'none'; }
+function tutorial() {
+  if (!S.tutorial) return;
+  const [x1, y1] = [ws.clientWidth * .38, ws.clientHeight * .45];
+  makeItem('air', x1, y1);
+  tip.textContent = 'Seret 🔥 Api ke 💧 Air!'; tip.style.display = 'block';
+  setTimeout(() => {
+    const t = grid.querySelector('[data-k="api"]'); if (!t || !S.tutorial) return;
+    const a = t.getBoundingClientRect(), r = wsRect();
+    hand.style.display = 'block'; hand.style.left = '0px'; hand.style.top = '0px';
+    handAnim = hand.animate([
+      { transform: `translate(${a.left + a.width / 2 - 14}px,${a.top + a.height / 2}px)`, opacity: 0 },
+      { transform: `translate(${a.left + a.width / 2 - 14}px,${a.top + a.height / 2}px)`, opacity: 1, offset: .15 },
+      { transform: `translate(${r.left + x1 - 14}px,${r.top + y1}px)`, opacity: 1, offset: .75 },
+      { transform: `translate(${r.left + x1 - 14}px,${r.top + y1}px)`, opacity: 0 },
+    ], { duration: 2200, iterations: Infinity, easing: 'ease-in-out' });
+  }, 600);
+}
+
+renderLib(); soundIcon();
+requestAnimationFrame(tutorial);
+addEventListener('resize', () => { const r = wsRect(); for (const el of items) place(el, Math.min(el._x, r.width - 40), Math.min(el._y, r.height - 50)); });
+window.__racik = { E, R, S, combine, makeItem, get items() { return items; } };
+</script>
+</body>
+</html>
