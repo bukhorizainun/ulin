@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Pulau Belajar</title>
+<meta name="description" content="Belajar sambil main bersama Si Kancil: berhitung uang di Pasar Kancil dan kata bahasa Inggris di Kata Ajaib.">
+<meta property="og:title" content="Pulau Belajar Si Kancil">
+<meta property="og:description" content="Pasar Kancil (berhitung uang) dan Kata Ajaib (bahasa Inggris). Untuk anak 6–9 tahun.">
+<meta property="og:image" content="https://bukhorizainun.github.io/ulin/belajar/og.png">
+<meta name="theme-color" content="#7CC8E8">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#7CC8E8;--sea:#3FA9D6;--sand:#FFF3D6;--ink:#2B2250;--muted:#6A6390;--card:#FFFDF6;
+  --green:#2BB673;--red:#E5484D;--gold:#F2C14E;--orange:#F59E0B;
+  --ease-out:cubic-bezier(.23,1,.32,1);--r:22px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(#9AD8F0,#E6F7FF 55%,#BDE8FF);color:var(--ink);font-family:"Baloo 2",system-ui,sans-serif}
+body{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+.press{transition:transform 140ms var(--ease-out),box-shadow 140ms var(--ease-out)}
+.press:active{transform:scale(.97) translateY(2px)}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;padding:max(12px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));overflow:auto}
+.screen.on{display:flex;animation:enter 240ms var(--ease-out)}
+@keyframes enter{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+.bar{width:100%;max-width:980px;display:flex;align-items:center;gap:10px;min-height:52px}
+.chip{background:rgba(255,255,255,.8);border-radius:999px;padding:6px 14px;font-weight:800;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.icon{text-decoration:none;color:var(--ink);width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.85);display:grid;place-items:center;font-size:24px;box-shadow:0 3px 0 rgba(0,0,0,.1)}
+.grow{flex:1}
+h1{margin:6px 0 0;font-size:clamp(34px,7vw,60px);line-height:1;color:#fff;text-shadow:0 4px 0 #2C7FB8,0 8px 18px rgba(0,0,0,.18);text-align:center}
+.sub{margin:8px 0 0;font-weight:700;color:#2C5F80;text-align:center}
+/* hub */
+.islands{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;margin:22px 0 10px;width:100%;max-width:900px}
+.island{position:relative;width:min(400px,92vw);border-radius:30px;padding:18px 18px 16px;background:var(--card);box-shadow:0 8px 0 rgba(43,34,80,.12),0 18px 30px rgba(43,34,80,.12);text-align:left;display:flex;gap:14px;align-items:center}
+.island .art{flex:none;width:104px;height:104px;border-radius:26px;display:grid;place-items:center;font-size:58px}
+.island h2{margin:0;font-size:28px;line-height:1.05}
+.island p{margin:4px 0 6px;color:var(--muted);font-weight:700;line-height:1.25}
+.stars{color:var(--gold);font-size:20px;letter-spacing:2px}
+.stickers{width:100%;max-width:900px;background:rgba(255,255,255,.6);border-radius:22px;padding:10px 14px;margin-top:8px}
+.stickers b{display:block;margin-bottom:4px}
+.stickers div{font-size:30px;letter-spacing:4px;min-height:40px}
+/* shared play area */
+.stage{flex:1;width:100%;max-width:980px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.prompt{background:var(--card);border-radius:var(--r);padding:12px 18px;box-shadow:0 6px 0 rgba(43,34,80,.1);text-align:center;font-weight:800;font-size:clamp(20px,4vw,30px);max-width:760px}
+.say{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;background:var(--sea);color:#fff;font-size:22px;vertical-align:middle;margin-left:8px;box-shadow:0 3px 0 #2C7FB8}
+.progress{display:flex;gap:6px}
+.progress i{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,.7);box-shadow:inset 0 0 0 2px rgba(43,34,80,.15)}
+.progress i.ok{background:var(--green)} .progress i.miss{background:var(--orange)}
+/* Pasar Kancil */
+.stall{display:flex;gap:16px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
+.goods{display:flex;gap:12px}
+.good{background:var(--card);border-radius:20px;padding:8px 14px;text-align:center;box-shadow:0 5px 0 rgba(43,34,80,.12)}
+.good .e{font-size:58px;line-height:1.1}
+.good .p{font-weight:800;font-size:22px;color:#B5361F}
+.paid{background:#E8F7EE;border:3px dashed var(--green)}
+.tray{min-height:118px;width:min(760px,96vw);border-radius:24px;background:rgba(255,255,255,.55);border:3px dashed rgba(43,34,80,.25);display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:10px;position:relative}
+.tray:empty::before{content:attr(data-hint);color:var(--muted);font-weight:700}
+.total{font-weight:800;font-size:clamp(22px,4vw,30px)}
+.wallet{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.money{width:clamp(96px,17vw,132px);height:clamp(54px,9vw,68px);border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:clamp(17px,3vw,22px);color:#fff;
+  box-shadow:0 4px 0 rgba(0,0,0,.25);border:2px solid rgba(255,255,255,.6);text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.money.coin{width:clamp(64px,11vw,78px);height:clamp(64px,11vw,78px);border-radius:50%}
+.money.in{animation:drop 220ms var(--ease-out)}
+@keyframes drop{from{opacity:0;transform:translateY(-14px) scale(.95)}to{opacity:1;transform:none}}
+.m1000{background:radial-gradient(circle at 35% 30%,#F3E7A8,#C9B458)}
+.m2000{background:linear-gradient(135deg,#8C96A3,#5E6773)}
+.m5000{background:linear-gradient(135deg,#B07A4A,#7A4E2A)}
+.m10000{background:linear-gradient(135deg,#8F5FB0,#5E3A80)}
+.m20000{background:linear-gradient(135deg,#3FAE6A,#1F7A45)}
+.go{background:var(--green);color:#fff;font-weight:800;font-size:24px;border-radius:999px;padding:10px 34px;box-shadow:0 5px 0 #1C7A4C}
+.go.ghost{background:rgba(255,255,255,.85);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.12);font-size:18px;padding:8px 18px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+/* Kata Ajaib */
+.big-say{width:120px;height:120px;border-radius:50%;background:var(--sea);color:#fff;font-size:54px;display:grid;place-items:center;box-shadow:0 7px 0 #2C7FB8}
+.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,40vw),1fr));gap:14px;width:min(760px,96vw)}
+.opt{background:var(--card);border-radius:26px;aspect-ratio:1/0.9;display:grid;place-items:center;font-size:clamp(64px,13vw,96px);box-shadow:0 7px 0 rgba(43,34,80,.12)}
+.opt.right{background:#DDF5E6;box-shadow:0 7px 0 var(--green)}
+.slots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.slot{width:clamp(44px,9vw,58px);height:clamp(54px,11vw,68px);border-radius:14px;background:rgba(255,255,255,.6);border:3px dashed rgba(43,34,80,.25);display:grid;place-items:center;font-size:clamp(28px,6vw,38px);font-weight:800}
+.slot.full{background:var(--card);border-style:solid;border-color:var(--green)}
+.tiles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:760px}
+.tile{width:clamp(52px,11vw,66px);height:clamp(52px,11vw,66px);border-radius:16px;background:var(--gold);font-weight:800;font-size:clamp(28px,6vw,36px);display:grid;place-items:center;box-shadow:0 5px 0 #B98A1E}
+.tile.used{visibility:hidden}
+.shake{animation:shake 320ms}
+@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-4px)}}
+/* feedback + results */
+#fx{position:fixed;inset:0;pointer-events:none;z-index:20}
+.spark{position:absolute;width:10px;height:10px;border-radius:50%}
+#toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%) translateY(16px);opacity:0;z-index:15;background:var(--card);border-radius:18px;padding:10px 18px;font-weight:800;
+  box-shadow:0 10px 26px rgba(43,34,80,.2);transition:opacity 200ms var(--ease-out),transform 200ms var(--ease-out);max-width:92vw;text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.result{background:var(--card);border-radius:30px;padding:24px;text-align:center;box-shadow:0 10px 0 rgba(43,34,80,.12);max-width:440px;width:92vw}
+.result .s{font-size:56px;color:var(--gold);letter-spacing:6px}
+.result .sticker{font-size:76px;animation:pop 520ms var(--ease-out)}
+@keyframes pop{from{opacity:0;transform:scale(.6) rotate(-12deg)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.on,.money.in,.result .sticker{animation:none}.shake{animation:none}}
+</style>
+</head>
+<body>
+
+<section class="screen on" id="hub">
+  <div class="bar"><a class="icon press" href="../" aria-label="Kembali ke Ulin">←</a><div class="grow"></div><button class="icon press" id="muteHub" aria-label="Suara">🔊</button></div>
+  <h1>Pulau Belajar</h1>
+  <p class="sub">Main sambil belajar bersama Si Kancil 🦌</p>
+  <div class="islands">
+    <button class="island press" data-go="pasar"><div class="art" style="background:#FFE9B8">🧺</div><div><h2>Pasar Kancil</h2><p>Berhitung uang: bayar dan beri kembalian</p><div class="stars" id="starsPasar">☆☆☆</div></div></button>
+    <button class="island press" data-go="kata"><div class="art" style="background:#D8F0FF">🔤</div><div><h2>Kata Ajaib</h2><p>Dengar kata bahasa Inggris, pilih gambarnya</p><div class="stars" id="starsKata">☆☆☆</div></div></button>
+  </div>
+  <div class="stickers"><b>Koleksi stiker</b><div id="stickerBox"></div></div>
+</section>
+
+<section class="screen" id="pasar">
+  <div class="bar"><button class="icon press" data-home aria-label="Kembali">←</button><div class="progress" id="pasarProg"></div><div class="grow"></div><span class="chip" id="pasarLv">Level 1</span></div>
+  <div class="stage">
+    <div class="prompt" id="pasarAsk"></div>
+    <div class="stall" id="pasarGoods"></div>
+    <div class="tray" id="tray" data-hint="Ketuk uang di bawah untuk menaruhnya di sini"></div>
+    <div class="row"><span class="total" id="trayTotal">Rp0</span><button class="go ghost press" id="trayClear">Ulangi</button><button class="go press" id="trayOk">Selesai ✓</button></div>
+    <div class="wallet" id="wallet"></div>
+  </div>
+</section>
+
+<section class="screen" id="kata">
+  <div class="bar"><button class="icon press" data-home aria-label="Kembali">←</button><div class="progress" id="kataProg"></div><div class="grow"></div><span class="chip" id="kataLv">Level 1</span></div>
+  <div class="stage" id="kataStage"></div>
+</section>
+
+<section class="screen" id="done"><div class="stage"><div class="result" id="result"></div></div></section>
+<div id="fx"></div><div id="toast"></div>
+
+<script type="module">
+import { rng, formatRupiah, DENOMS, makeShopTask, recordAnswer, makeWordRound, makeSpelling, starsFor } from './logic.js';
+const R = rng(Date.now() & 0xffffffff), $ = (id) => document.getElementById(id), ROUND = 8;
+const STICKERS = ['🦌', '🐢', '🦋', '🐠', '🦜', '🐘', '🦒', '🐯', '🦀', '🐬', '🌻', '🍉', '🚂', '🚀', '🏝️', '🌈', '⭐', '🎈', '🪁', '🏆'];
+
+// ---------- save ----------
+let S = { stars: { pasar: 0, kata: 0 }, level: { pasar: 1, kata: 1 }, stickers: [], muted: false };
+try { S = Object.assign(S, JSON.parse(localStorage.getItem('belajar-v1') || '{}')); } catch (_) {}
+const save = () => { try { localStorage.setItem('belajar-v1', JSON.stringify(S)); } catch (_) {} };
+
+// ---------- sound & voice ----------
+let AC = null;
+function tone(f, d, type = 'triangle', v = .12, delay = 0) {
+  if (S.muted) return;
+  try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state !== 'running') AC.resume();
+    const t = AC.currentTime + delay, o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(v, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + d + .05); } catch (_) {}
+}
+const sfx = {
+  tap() { tone(520, .05, 'square', .04); },
+  coin() { tone(1046, .06, 'square', .05); tone(1568, .09, 'square', .04, .05); },
+  right() { [659, 784, 1047].forEach((f, i) => tone(f, .16, 'triangle', .13, i * .07)); },
+  wrong() { tone(260, .2, 'sine', .1); },
+  win() { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, .22, 'triangle', .14, i * .09)); },
+};
+const voices = () => (window.speechSynthesis ? speechSynthesis.getVoices() : []);
+if (window.speechSynthesis) { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; }
+function speak(text, lang = 'id') {
+  if (S.muted || !window.speechSynthesis) return false;
+  const v = voices().find((x) => x.lang.toLowerCase().startsWith(lang)); if (!v) return false; // stay quiet rather than mispronounce
+  try { const u = new SpeechSynthesisUtterance(text); u.voice = v; u.lang = v.lang; u.rate = lang === 'en' ? .85 : 1; u.pitch = 1.1; speechSynthesis.cancel(); speechSynthesis.speak(u); return true; } catch (_) { return false; }
+}
+const buzz = (ms = 10) => { if (navigator.vibrate) try { navigator.vibrate(ms); } catch (_) {} };
+let toastT = 0;
+function toast(t, ms = 1800) { const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), ms); }
+function sparks(el, n = 16) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, cols = ['#F2C14E', '#2BB673', '#3FA9D6', '#E5484D', '#fff'];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div'), a = Math.random() * 6.283, d = 50 + Math.random() * 80; s.className = 'spark'; s.style.cssText = `left:${cx}px;top:${cy}px;background:${cols[i % 5]}`; $('fx').appendChild(s);
+    s.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(.4)`, opacity: 0 }], { duration: 600, easing: 'cubic-bezier(.23,1,.32,1)' }).onfinish = () => s.remove();
+  }
+}
+function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+
+// ---------- navigation ----------
+function show(id) { document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('on', s.id === id)); }
+function hub() {
+  show('hub'); if (window.speechSynthesis) speechSynthesis.cancel();
+  const st = (n) => '★'.repeat(n) + '☆'.repeat(3 - n);
+  $('starsPasar').textContent = st(S.stars.pasar); $('starsKata').textContent = st(S.stars.kata);
+  $('stickerBox').textContent = S.stickers.length ? S.stickers.join(' ') : 'Selesaikan satu permainan untuk dapat stiker pertama!';
+  $('muteHub').textContent = S.muted ? '🔇' : '🔊';
+}
+document.querySelectorAll('[data-go]').forEach((b) => (b.onclick = () => { sfx.tap(); b.dataset.go === 'pasar' ? startPasar() : startKata(); }));
+document.querySelectorAll('[data-home]').forEach((b) => (b.onclick = () => { sfx.tap(); hub(); }));
+$('muteHub').onclick = () => { S.muted = !S.muted; save(); hub(); };
+function progress(el, marks) { el.innerHTML = Array.from({ length: ROUND }, (_, i) => `<i class="${marks[i] === true ? 'ok' : marks[i] === false ? 'miss' : ''}"></i>`).join(''); }
+
+// ---------- round bookkeeping shared by both games ----------
+let game = null;
+function newRound(name) { game = { name, i: 0, marks: [], firstTry: true, history: [], level: S.level[name] }; }
+function answer(ok) { game = { ...recordAnswer(game, ok, 4), name: game.name }; }
+function finish() {
+  const right = game.marks.filter(Boolean).length, stars = starsFor(right, ROUND);
+  S.stars[game.name] = Math.max(S.stars[game.name], stars); S.level[game.name] = game.level;
+  const sticker = STICKERS.find((s) => !S.stickers.includes(s)) || STICKERS[Math.floor(Math.random() * STICKERS.length)];
+  S.stickers.push(sticker); save(); sfx.win(); buzz(30);
+  show('done');
+  $('result').innerHTML = `<h2 style="margin:0">Hebat!</h2><div class="s">${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}</div><p style="font-weight:700;margin:4px 0">Benar pada coba pertama: ${right} dari ${ROUND}</p><div class="sticker">${sticker}</div><p style="font-weight:700;color:var(--muted);margin:0 0 14px">Stiker baru untuk koleksimu!</p><div class="row"><button class="go press" id="again">Main lagi</button><button class="go ghost press" id="home">Pulau Belajar</button></div>`;
+  speak(stars === 3 ? 'Hebat sekali! Kamu dapat tiga bintang!' : 'Bagus! Ayo main lagi supaya makin pintar!');
+  const n = game.name; $('again').onclick = () => (n === 'pasar' ? startPasar() : startKata()); $('home').onclick = hub;
+  sparks($('result'), 30);
+}
+
+// ---------- Pasar Kancil ----------
+let task = null, tray = [];
+function startPasar() { newRound('pasar'); show('pasar'); nextShop(); }
+function nextShop() {
+  if (game.i >= ROUND) return finish();
+  task = makeShopTask(game.level, R); tray = [];
+  $('pasarLv').textContent = 'Level ' + game.level; progress($('pasarProg'), game.marks);
+  const names = task.items.map((it) => it.name.toLowerCase()).join(' dan ');
+  $('pasarGoods').innerHTML = task.items.map((it) => `<div class="good"><div class="e">${it.emoji}</div><div>${it.name}</div><div class="p">${formatRupiah(it.price)}</div></div>`).join('')
+    + (task.kind === 'change' ? `<div class="good paid"><div class="e">🧑</div><div>Pembeli bayar</div><div class="p">${formatRupiah(task.paid)}</div></div>` : '');
+  if (task.kind === 'pay') { $('pasarAsk').innerHTML = `Kamu beli ${names}. Bayar dengan uang yang pas!<button class="say press" id="pSay" aria-label="Dengar">🔊</button>`; }
+  else { $('pasarAsk').innerHTML = `Kamu penjualnya. Pembeli bayar ${formatRupiah(task.paid)}. Berapa kembaliannya?<button class="say press" id="pSay" aria-label="Dengar">🔊</button>`; }
+  $('tray').dataset.hint = task.kind === 'pay' ? 'Ketuk uang di bawah untuk membayar' : 'Ketuk uang untuk memberi kembalian';
+  const sayIt = () => speak(task.kind === 'pay'
+    ? `Kamu beli ${names}. Harganya ${spoken(task.total)}. Bayar dengan uang yang pas!`
+    : `Harganya ${spoken(task.total)}. Pembeli bayar ${spoken(task.paid)}. Berapa kembaliannya?`);
+  $('pSay').onclick = sayIt; sayIt();
+  $('wallet').innerHTML = DENOMS.filter((d) => d <= 20000).map((d) => `<button class="money press ${d === 1000 ? 'coin ' : ''}m${d}" data-v="${d}" aria-label="${formatRupiah(d)}">${formatRupiah(d).replace('Rp', '')}</button>`).join('');
+  $('wallet').querySelectorAll('.money').forEach((b) => (b.onclick = () => { tray.push(+b.dataset.v); sfx.coin(); drawTray(); }));
+  drawTray();
+}
+const spoken = (n) => (n / 1000) + ' ribu rupiah';
+function drawTray() {
+  $('tray').innerHTML = tray.map((v, i) => `<button class="money in ${v === 1000 ? 'coin ' : ''}m${v}" data-i="${i}" aria-label="Ambil kembali">${formatRupiah(v).replace('Rp', '')}</button>`).join('');
+  $('tray').querySelectorAll('.money').forEach((b) => (b.onclick = () => { tray.splice(+b.dataset.i, 1); sfx.tap(); drawTray(); }));
+  $('trayTotal').textContent = formatRupiah(tray.reduce((s, v) => s + v, 0));
+}
+$('trayClear').onclick = () => { tray = []; sfx.tap(); drawTray(); };
+$('trayOk').onclick = () => {
+  const sum = tray.reduce((s, v) => s + v, 0), want = task.kind === 'pay' ? task.total : task.change;
+  if (sum === want) {
+    sfx.right(); buzz(20); sparks($('tray')); toast(['Pas sekali!', 'Benar!', 'Hebat!', 'Mantap!'][Math.floor(Math.random() * 4)]);
+    speak(task.kind === 'pay' ? 'Pas! Terima kasih.' : `Benar! Kembaliannya ${spoken(task.change)}.`);
+    answer(true); setTimeout(nextShop, 1100);
+  } else {
+    sfx.wrong(); shake($('tray')); answer(false);
+    const msg = sum > want ? 'Kelebihan. Ambil sebagian uangnya.' : sum === 0 ? 'Taruh uangnya dulu, ya.' : 'Masih kurang. Tambah lagi!';
+    toast(msg); speak(msg);
+    if (!game.firstTry && task.kind === 'change' && sum !== want) setTimeout(() => toast(`Petunjuk: ${formatRupiah(task.paid)} − ${formatRupiah(task.total)}`, 3000), 1900);
+  }
+};
+
+// ---------- Kata Ajaib ----------
+let recent = [], q = null, spell = null;
+function startKata() { newRound('kata'); recent = []; show('kata'); nextWord(); }
+function nextWord() {
+  if (game.i >= ROUND) return finish();
+  $('kataLv').textContent = 'Level ' + game.level; progress($('kataProg'), game.marks);
+  game.level >= 4 ? spellRound() : pickRound();
+}
+function sayWord(w) { if (!speak(w.en, 'en')) toast(w.en.toUpperCase(), 2500); }
+function pickRound() {
+  q = makeWordRound(game.level, R, recent); recent = [...recent, q.target.en].slice(-8);
+  $('kataStage').innerHTML = `<button class="big-say press" id="kSay" aria-label="Dengar kata">🔊</button><div class="prompt" style="font-size:22px">Dengar katanya, lalu pilih gambarnya</div>
+    <div class="options">${q.options.map((o) => `<button class="opt press" data-en="${o.en}" aria-label="${o.id}">${o.emoji}</button>`).join('')}</div>`;
+  $('kSay').onclick = () => sayWord(q.target); setTimeout(() => sayWord(q.target), 300);
+  $('kataStage').querySelectorAll('.opt').forEach((b) => (b.onclick = () => {
+    if (b.dataset.en === q.target.en) {
+      b.classList.add('right'); sfx.right(); buzz(20); sparks(b); toast(`${q.target.en} = ${q.target.id}`);
+      speak(`Yes! ${q.target.en}.`, 'en'); answer(true); setTimeout(nextWord, 1300);
+    } else { sfx.wrong(); shake(b); answer(false); setTimeout(() => sayWord(q.target), 350); }
+  }));
+}
+function spellRound() {
+  const pool = makeWordRound(3, R, recent).target; recent = [...recent, pool.en].slice(-8);
+  spell = { w: pool, s: makeSpelling(pool.en, R, Math.min(3, Math.max(1, pool.en.length - 3))), at: 0 };
+  $('kataStage').innerHTML = `<div class="row"><div class="opt" style="width:140px;aspect-ratio:1;font-size:84px">${pool.emoji}</div><button class="big-say press" id="kSay" aria-label="Dengar kata">🔊</button></div>
+    <div class="prompt" style="font-size:22px">Susun hurufnya!</div><div class="slots">${[...pool.en].map(() => '<div class="slot"></div>').join('')}</div>
+    <div class="tiles">${spell.s.tiles.map((c, i) => `<button class="tile press" data-i="${i}">${c}</button>`).join('')}</div>`;
+  $('kSay').onclick = () => sayWord(pool); setTimeout(() => sayWord(pool), 300);
+  const slots = $('kataStage').querySelectorAll('.slot');
+  $('kataStage').querySelectorAll('.tile').forEach((b) => (b.onclick = () => {
+    const want = spell.w.en[spell.at];
+    if (b.textContent === want) {
+      slots[spell.at].textContent = want; slots[spell.at].classList.add('full'); b.classList.add('used'); spell.at++; sfx.coin();
+      if (spell.at === spell.w.en.length) { sfx.right(); buzz(20); sparks($('kataStage').querySelector('.slots')); toast(`${spell.w.en} = ${spell.w.id}`); speak(`Great! ${spell.w.en}.`, 'en'); answer(true); setTimeout(nextWord, 1500); }
+    } else { sfx.wrong(); shake(b); answer(false); }
+  }));
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden && window.speechSynthesis) speechSynthesis.cancel(); });
+hub();
+window.__belajar = { get game() { return game; }, get task() { return task; }, get q() { return q; }, get spell() { return spell; }, S };
+</script>
+</body>
+</html>
