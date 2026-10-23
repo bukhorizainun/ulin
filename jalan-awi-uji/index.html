@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="./assets/index-Cn2SIbTn.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DmYsQ7L0.css">
+  <script type="module" crossorigin src="./assets/index-D_UYN_EP.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Cdupfi2q.css">
 </head>
 <body>
 <canvas id="c" aria-label="Platformer tanah liat dari samping. Panah untuk jalan, Spasi untuk lompat, E untuk ambil, ikat, atau lepas bambu."></canvas>
@@ -36,11 +36,16 @@
     <button class="icon" id="look" title="Lihat seluruh jalan (Tab)" aria-label="Lihat seluruh jalan">👁</button>
     <button class="icon" id="help" title="Bantu aku (H)" aria-label="Bantu aku">?</button>
     <button class="icon" id="reset" title="Ulang dari saung (R)" aria-label="Ulang dari saung">↺</button>
-    <button class="icon" id="mute" title="Suara" aria-label="Suara">🔊</button>
-    <a class="icon" href="../" title="Kembali ke Ulin" aria-label="Kembali ke Ulin">&#8962;</a>
+    <button class="icon" id="menuB" title="Menu" aria-label="Menu" aria-expanded="false" aria-controls="menu">⋯</button>
   </div>
 </div>
 
+<div id="menu" class="menu" hidden role="menu" aria-label="Menu">
+  <button id="mute" class="mi" role="menuitem">🔊 Suara</button>
+  <div id="menuMusic" class="mi-row" hidden><span>Musik</span><button class="mi small" data-score="degung" role="menuitemradio">Degung</button><button class="mi small" data-score="bambu" role="menuitemradio">Bambu</button></div>
+  <button id="menuLevels" class="mi" role="menuitem">☰ Pilih level</button>
+  <a class="mi" href="../" role="menuitem">&#8962; Kembali ke Ulin</a>
+</div>
 <div id="hint" role="status" aria-live="polite"></div>
 <div id="aim" hidden><span id="aimText"></span><small>◀ ▶ pilih tumpuan · <b>E</b> ikat · <b>Q</b> batal</small></div>
 
