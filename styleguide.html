@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ulin · Panduan gaya</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/ulin.css">
+<style>main{padding-block:32px 80px;display:flex;flex-direction:column;gap:48px}h1{font-size:var(--fs-2xl)}section>h2{font-size:var(--fs-xl);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--ink)}.row{display:flex;flex-wrap:wrap;gap:16px;align-items:center}.sw{width:150px;border:2px solid var(--ink);border-radius:12px;overflow:hidden;background:var(--sheet);font-size:var(--fs-xs)}.sw i{display:block;height:64px}.sw span{display:block;padding:6px 8px}.type>*{margin-bottom:10px}.dark{background:var(--nila-950) var(--anyaman-dark);color:var(--kapas);padding:24px;border-radius:var(--r-lg)}.cards{display:grid;grid-template-columns:2fr 1fr 1fr;gap:24px;max-width:980px}.sheet-demo{position:relative;max-width:520px;border:var(--bw) solid var(--ink);border-radius:var(--r-lg);background:var(--sheet);box-shadow:8px 8px 0 var(--ink);overflow:hidden}@media(max-width:700px){.cards{grid-template-columns:1fr 1fr}.cards .big{grid-column:span 2}}</style>
+</head>
+<body>
+<header class="top" style="background:var(--nila-950) var(--anyaman-dark)"><div class="wrap" style="padding-block:18px;color:var(--kapas)"><h1>Panduan gaya Ulin</h1><p style="color:var(--kapas-2)">Token dan komponen beranda. Halaman ini tidak ditautkan dari navigasi.</p></div><div class="pita"></div></header>
+<main class="wrap">
+<section><h2>Warna</h2>
+<div class="row" id="swatches"></div>
+</section>
+<section class="type"><h2>Huruf</h2>
+<p style="font-family:var(--display);font-size:var(--fs-2xl);line-height:1">Young Serif: judul dan nama game</p>
+<p style="font-family:var(--display);font-size:var(--fs-xl)">Petualangan &amp; Aksi</p>
+<p style="font-size:var(--fs-lg);font-weight:800">Figtree 800: penekanan pendek</p>
+<p>Figtree 400: teks isi untuk deskripsi game, lebar baris paling banyak sekitar 65 karakter supaya enak dibaca anak dan orang tua.</p>
+<p style="font-size:var(--fs-sm);color:var(--muted)">Figtree 400 kecil: keterangan tambahan</p>
+</section>
+<section><h2>Tombol</h2>
+<div class="row"><a class="btn btn-primary" href="#">Main sekarang</a><button class="btn" type="button">Main acak</button><button class="btn btn-ghost" type="button">Info game</button><button class="btn btn-icon" type="button" aria-label="Info">i</button></div>
+<div class="dark on-dark row" style="margin-top:16px"><a class="btn btn-primary" href="#">Main sekarang</a><button class="btn btn-ghost" type="button">Info game</button></div>
+</section>
+<section><h2>Chip kategori, badge, tag</h2>
+<div class="chips"><button class="chip" data-cat="" aria-pressed="true" type="button">Semua <span class="n">17</span></button><button class="chip" data-cat="petualangan" aria-pressed="false" type="button">Petualangan &amp; Aksi <span class="n">6</span></button><button class="chip" data-cat="teka-teki" aria-pressed="true" type="button">Teka-teki <span class="n">4</span></button><button class="chip" data-cat="belajar" aria-pressed="true" type="button">Belajar <span class="n">5</span></button><button class="chip" data-cat="kreasi" aria-pressed="false" type="button">Kreasi <span class="n">2</span></button></div>
+<div class="row" style="margin-top:16px"><span class="badge">Baru</span><span class="badge">10 episode</span><ul class="tags"><li>7+ tahun</li><li>10–15 menit</li><li>3D</li></ul></div>
+</section>
+<section><h2>Pencarian</h2>
+<label class="search has" style="max-width:520px;display:block"><span class="sr">Cari game</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" value="layangan"><button class="clr" type="button" aria-label="Hapus pencarian">✕</button></label>
+</section>
+<section><h2>Kartu game</h2>
+<div class="cards">
+<article class="card big" data-cat="teka-teki"><a href="#"><div class="pic"><img src="jalan-awi/thumb-1280.webp" alt="" width="1280" height="800"></div><div class="meta"><h3>Jalan Awi</h3><p>Bantu Mael membawa padi ke leuit di kampung Pasir Kawung. Bambu tidak boleh dipotong atau disambung.</p><ul class="tags"><li>7+ tahun</li><li>10–15 menit</li><li>3D</li></ul></div></a><span class="badge">Baru</span><button class="btn btn-icon info" type="button" aria-label="Info Jalan Awi">i</button></article>
+<article class="card" data-cat="petualangan"><a href="#"><div class="pic"><img src="kejar/thumb-640.webp" alt="" width="640" height="400"></div><div class="meta"><h3>Kejar Layangan</h3><p>Layangan putus! Lari, lompat, dan meluncur melewati kampung.</p><ul class="tags"><li>6+ tahun</li><li>1–3 menit</li></ul></div></a><button class="btn btn-icon info" type="button" aria-label="Info Kejar Layangan">i</button></article>
+<article class="card" data-cat="kreasi"><a href="#"><div class="pic"><img src="iseng/thumb-640.webp" alt="" width="640" height="400"></div><div class="meta"><h3>Mesin Iseng</h3><p>Susun papan, pegas, dan kipas, lalu lihat kelereng menjalankan mesinmu.</p><ul class="tags"><li>6+ tahun</li><li>bebas</li></ul></div></a><button class="btn btn-icon info" type="button" aria-label="Info Mesin Iseng">i</button></article>
+</div>
+</section>
+<section><h2>Lembar detail game</h2>
+<div class="sheet-demo sheet"><img class="cover" src="candi/thumb-1280.webp" alt="" width="1280" height="800"><div class="body"><h2>Cahaya Candi</h2><p class="lead">Bantu Neng menyalakan obor di candi kuno.</p><ul class="facts"><li><b>Usia</b><span>7+ tahun</span></li><li><b>Lama main</b><span>1–4 menit per ruang</span></li><li><b>Tingkat</b><span>Sedang</span></li><li><b>Perangkat</b><span>HP, tablet, laptop</span></li></ul><div class="how"><b>Cara main</b>Panah untuk berjalan, Z untuk mundur satu langkah.</div><div class="acts"><a class="btn btn-primary" href="#">Main sekarang</a><button class="btn btn-ghost" type="button">Kembali</button></div></div></div>
+</section>
+<section><h2>Pola</h2>
+<div class="dark" style="height:120px"></div><div class="pita" style="margin-top:12px"></div>
+</section>
+</main>
+<script>const SW=[["nila-950","kepala, hero"],["nila","Petualangan & Aksi"],["huma","Teka-teki"],["padi","Belajar, tombol utama"],["tenun","Kreasi"],["bilik","latar halaman"],["sheet","kartu, dialog"],["ink","teks"],["ink-2","teks isi"],["muted","keterangan"],["kapas","teks di atas nila"]];document.getElementById("swatches").innerHTML=SW.map(([a,e])=>`<div class="sw"><i style="background:var(--${a})"></i><span><b>--${a}</b><br>${e}</span></div>`).join("");</script>
+</body>
+</html>

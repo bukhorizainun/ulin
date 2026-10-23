@@ -1,0 +1,2 @@
+Young Serif (Noel Pinto) and Figtree (Erik Kennedy), latin subsets from Google Fonts.
+Both are licensed under the SIL Open Font License 1.1: https://openfontlicense.org
