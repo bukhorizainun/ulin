@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>ULIN: THE LOST ATLAS 3D · Prolog</title>
+  <meta name="description" content="Prolog 3D dari Ulin: The Lost Atlas — Ikuti Mael dan Ulin menembus dunia peta hidup." />
+  <meta name="theme-color" content="#162334" />
+  <script type="module" crossorigin src="./assets/index-BVIhGE9o.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-11br_yGg.css">
+</head>
+<body>
+  <main id="app" class="app">
+    <canvas id="stageCanvas" aria-label="Dunia 3D Ulin: The Lost Atlas"></canvas>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-overlay">
+      <div class="loading-card">
+        <div class="loading-compass" aria-hidden="true">✦</div>
+        <p class="eyebrow">Membuka Halaman Pertama</p>
+        <h2>ULIN: THE LOST ATLAS</h2>
+        <p id="loadingStatus" class="loading-sub">Menyiapkan dunia tiga dimensi…</p>
+      </div>
+    </div>
+
+    <!-- Top Gameplay HUD -->
+    <header id="hud" class="hud" hidden>
+      <a class="hud-btn icon-btn" href="../" aria-label="Kembali ke Ulin" title="Kembali ke Ulin">⌂</a>
+      <div class="hud-chip title-chip">
+        <span id="hudRegion">Bengkel yang Terlupakan</span>
+        <span class="sep">·</span>
+        <strong id="hudPieceName">Debu yang Mengingat</strong>
+      </div>
+      <div class="spacer"></div>
+      <div class="hud-chip" id="hudFragment" title="Fragmen Atlas">✦ 0/1</div>
+      <div class="hud-chip" id="hudSecret" title="Catatan Pinggir Rahasia">✧ 0/1</div>
+      <button id="btnPulseHud" class="hud-btn pulse-chip" type="button" title="Atlas Pulse (F)">◎ Pulse</button>
+      <button id="btnPauseHud" class="hud-btn icon-btn" type="button" aria-label="Jeda Permainan" title="Jeda (Esc)">Ⅱ</button>
+    </header>
+
+    <!-- Bottom Combat & Ability Bar (Pieces 3 & 4) -->
+    <section id="combatHud" class="combat-hud" hidden aria-label="Status Mael">
+      <div class="bars-cluster">
+        <div class="stat-row">
+          <span class="stat-label">Mael</span>
+          <div class="bar-track hp-track"><div id="hpFill" class="bar-fill hp-fill"></div></div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Denyut Atlas <kbd>Q</kbd></span>
+          <div class="bar-track meter-track"><div id="meterFill" class="bar-fill meter-fill"></div></div>
+        </div>
+      </div>
+      <div id="bossHud" class="boss-cluster" hidden>
+        <div class="boss-header">
+          <span id="bossName">Penjaga Tinta</span>
+          <span id="bossStatus" class="boss-tag" hidden>GOYAH · TEKAN E</span>
+        </div>
+        <div class="bar-track boss-track"><div id="bossHpFill" class="bar-fill boss-fill"></div></div>
+      </div>
+    </section>
+
+    <!-- Story / Beat Toast -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Piece 1: Opening & Title Overlay -->
+    <section id="piece1Overlay" class="piece-overlay" hidden>
+      <div id="openingCaption" class="opening-caption">
+        <p class="eyebrow">Sebuah Petualangan Ulin</p>
+        <p id="openingLine" class="opening-line">Di atas awan kertas, garis-garis peta sedang ditulis ulang…</p>
+        <button id="btnSkipOpening" class="skip-pill" type="button">Lewati Pembuka ›</button>
+      </div>
+
+      <div id="titleCard" class="title-card" hidden>
+        <p class="eyebrow">Prolog 3D · Aksi-Petualangan</p>
+        <h1 class="game-title">ULIN: THE LOST ATLAS<span>MAEL &amp; KOMPAS YANG MENGINGAT</span></h1>
+        <p class="title-desc">
+          Sang Penghapus menghapus pulau-pulau dari setiap peta. Bersama Ulin, ikuti cahaya liontin menuju bengkel yang terlupakan.
+        </p>
+        <div class="title-actions">
+          <button id="btnStartGame" class="btn primary-btn" type="button">Mulai</button>
+          <button id="btnOpenSettings" class="btn secondary-btn" type="button">Pengaturan</button>
+          <a class="btn ghost-btn" href="../">Kembali ke Ulin</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Piece 2: Character Creation (Buat Karakter) -->
+    <section id="piece2Overlay" class="creator-overlay" hidden aria-label="Buat Karakter">
+      <div class="creator-header">
+        <div>
+          <p class="eyebrow">Suaka Peta Kuno</p>
+          <h2>Buat Karakter · Mael</h2>
+        </div>
+        <div class="creator-preview-badge">
+          <span class="badge-icon">⚔</span>
+          <span id="weaponPreviewText">Bilah Kembar</span>
+        </div>
+      </div>
+
+      <div class="creator-body">
+        <div class="creator-Panel">
+          <div class="slot-group" data-slot="hair">
+            <span class="slot-label">Rambut</span>
+            <div id="slotHair" class="slot-options"></div>
+          </div>
+          <div class="slot-group" data-slot="outfit">
+            <span class="slot-label">Pakaian</span>
+            <div id="slotOutfit" class="slot-options"></div>
+          </div>
+          <div class="slot-group" data-slot="palette">
+            <span class="slot-label">Palet Warna</span>
+            <div id="slotPalette" class="slot-swatches"></div>
+          </div>
+          <div class="slot-group" data-slot="weapon">
+            <span class="slot-label">Senjata</span>
+            <div id="slotWeapon" class="slot-options"></div>
+          </div>
+          <div class="slot-group" data-slot="accessory">
+            <span class="slot-label">Aksesori</span>
+            <div id="slotAccessory" class="slot-options"></div>
+          </div>
+        </div>
+
+        <div class="creator-viewport-hint">
+          <span>⟳ Geser untuk memutar Mael</span>
+        </div>
+      </div>
+
+      <div class="creator-footer">
+        <button id="btnBackToTitle" class="btn ghost-btn" type="button">← Kembali</button>
+        <button id="btnResetLook" class="btn secondary-btn" type="button">Tampilan Awal</button>
+        <button id="btnStartAdventure" class="btn primary-btn cta-btn" type="button">MULAI PETUALANGAN →</button>
+      </div>
+    </section>
+
+    <!-- Settings Modal -->
+    <section id="settingsModal" class="modal-backdrop" hidden aria-label="Pengaturan">
+      <div class="modal-card">
+        <p class="eyebrow">Pengaturan Permainan</p>
+        <h2>Kualitas, Suara &amp; Kontrol</h2>
+
+        <div class="setting-row">
+          <span>Kualitas Grafis</span>
+          <div class="seg-group" id="qualitySelect">
+            <button type="button" data-q="low">Rendah</button>
+            <button type="button" data-q="mid">Sedang</button>
+            <button type="button" data-q="high">Tinggi</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <span>Efek Suara</span>
+          <button id="btnToggleSfx" class="btn secondary-btn small-btn" type="button">Aktif</button>
+        </div>
+
+        <div class="setting-row">
+          <span>Musik Latar</span>
+          <button id="btnToggleMusic" class="btn secondary-btn small-btn" type="button">Aktif</button>
+        </div>
+
+        <div class="controls-grid">
+          <div><kbd>WASD</kbd> Bergerak</div>
+          <div><kbd>Spasi</kbd> Lompat / Panjat</div>
+          <div><kbd>Klik Kiri</kbd> Kombo Cepat</div>
+          <div><kbd>Klik Kanan</kbd> Tebasan Berat</div>
+          <div><kbd>Shift</kbd> Hindar / Lari</div>
+          <div><kbd>F</kbd> Atlas Pulse</div>
+          <div><kbd>Q</kbd> Denyut Atlas</div>
+          <div><kbd>Tab</kbd> Kunci Target</div>
+          <div><kbd>E</kbd> Interaksi / Finisher</div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btnCloseSettings" class="btn primary-btn" type="button">Simpan &amp; Tutup</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pause Modal -->
+    <section id="pauseModal" class="modal-backdrop" hidden aria-label="Jeda">
+      <div class="modal-card">
+        <p class="eyebrow">Beri Atlas Waktu Bernapas</p>
+        <h2>Permainan Dijeda</h2>
+        <p class="modal-sub">Mael dan Ulin menunggu di bengkel kuno.</p>
+        <div class="modal-actions">
+          <button id="btnResumeGame" class="btn primary-btn" type="button">Lanjutkan</button>
+          <button id="btnOpenSettingsPause" class="btn secondary-btn" type="button">Pengaturan</button>
+          <button id="btnToCreator" class="btn secondary-btn" type="button">Ubah Karakter</button>
+          <button id="btnQuitToTitle" class="btn ghost-btn" type="button">Menu Utama</button>
+          <a class="btn ghost-btn" href="../">Keluar ke Ulin</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing "Bersambung..." Card -->
+    <section id="endingModal" class="modal-backdrop" hidden aria-label="Bersambung">
+      <div class="modal-card ending-card">
+        <p class="eyebrow">Prolog Selesai · Fragmen Pertama Pulih</p>
+        <h2>Bersambung…</h2>
+        <p class="modal-sub">
+          Di bawah gerbang bengkel, sebuah kerajaan bawah tanah yang luas menyala dalam kabut. Kompas Ulin menunjuk jauh ke kedalaman Atlas.
+        </p>
+        <div class="modal-actions">
+          <button id="btnEndingToTitle" class="btn primary-btn" type="button">Kembali ke Menu Utama</button>
+          <a class="btn secondary-btn" href="../">Kembali ke Ulin</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Touch Controls (Landscape Mobile/Tablet, >= 56px buttons) -->
+    <div id="touchControls" class="touch-controls" aria-label="Kontrol Sentuh">
+      <div id="touchStickZone" class="touch-stick-zone">
+        <div class="touch-stick-base">
+          <div id="touchStickKnob" class="touch-stick-knob"></div>
+        </div>
+      </div>
+      <div class="touch-actions">
+        <button type="button" class="touch-btn pulse-btn" data-action="pulse" aria-label="Atlas Pulse">◎</button>
+        <button type="button" class="touch-btn ability-btn" data-action="ability" aria-label="Denyut Atlas">✦</button>
+        <button type="button" class="touch-btn dodge-btn" data-action="dodge" aria-label="Hindar">⟲</button>
+        <button type="button" class="touch-btn heavy-btn" data-action="heavy" aria-label="Serangan Berat">⚔</button>
+        <button type="button" class="touch-btn light-btn" data-action="light" aria-label="Serang">🗡</button>
+        <button type="button" class="touch-btn jump-btn" data-action="jump" aria-label="Lompat">↑</button>
+      </div>
+    </div>
+
+    <!-- Perf Overlay (?perf) -->
+    <div id="perfBox" class="perf-box" hidden></div>
+  </main>
+
+</body>
+</html>
