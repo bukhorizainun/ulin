@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="./assets/index-DAIBMAxq.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-B8SS5Dlx.css">
+  <script type="module" crossorigin src="./assets/index-COwhrex9.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Cdupfi2q.css">
 </head>
 <body>
 <canvas id="c" aria-label="Platformer tanah liat dari samping. Panah untuk jalan, Spasi untuk lompat, E untuk ambil, ikat, atau lepas bambu."></canvas>
@@ -19,6 +19,9 @@
   <div class="logo"><span class="l1">Jalan</span><span class="l2">Awi</span></div>
   <p class="sub">Mael di Pasir Kawung</p>
   <button id="play" class="btn big">Main</button>
+  <button id="toBook0" class="btn small">Buku motif</button>
+  <div id="musicPick" class="row pick" hidden role="group" aria-label="Pilih musik"><span>Musik:</span><button class="btn small" data-score="degung" aria-pressed="true">Degung</button><button class="btn small" data-score="bambu" aria-pressed="false">Bambu</button></div>
+  <p id="ujiLabel" class="uji" hidden>Versi uji</p>
   <p class="how">Bambu tidak boleh dipotong atau disambung. Pilih yang pas, ikat di batu atau akar, dan lepas lagi kalau sudah tidak perlu.</p>
   <div class="row"><a class="btn small" href="../">&#8962; Ulin</a><button id="mute0" class="btn small" aria-label="Suara">🔊</button></div>
   <p id="loading" class="loading">Membentuk tanah liat…</p>
@@ -29,12 +32,20 @@
   <div class="pill" id="jejak" aria-label="Jejak bambu yang tertinggal">Jejak <b>0</b></div>
   <div class="pill" id="carry" hidden>Awi <b>6</b></div>
   <div class="tools">
+    <button class="icon" id="undo" title="Batalkan satu langkah (U)" aria-label="Batalkan satu langkah">↶</button>
+    <button class="icon" id="look" title="Lihat seluruh jalan (Tab)" aria-label="Lihat seluruh jalan">👁</button>
+    <button class="icon" id="help" title="Bantu aku (H)" aria-label="Bantu aku">?</button>
     <button class="icon" id="reset" title="Ulang dari saung (R)" aria-label="Ulang dari saung">↺</button>
-    <button class="icon" id="mute" title="Suara" aria-label="Suara">🔊</button>
-    <a class="icon" href="../" title="Kembali ke Ulin" aria-label="Kembali ke Ulin">&#8962;</a>
+    <button class="icon" id="menuB" title="Menu" aria-label="Menu" aria-expanded="false" aria-controls="menu">⋯</button>
   </div>
 </div>
 
+<div id="menu" class="menu" hidden role="menu" aria-label="Menu">
+  <button id="mute" class="mi" role="menuitem">🔊 Suara</button>
+  <div id="menuMusic" class="mi-row" hidden><span>Musik</span><button class="mi small" data-score="degung" role="menuitemradio">Degung</button><button class="mi small" data-score="bambu" role="menuitemradio">Bambu</button></div>
+  <button id="menuLevels" class="mi" role="menuitem">☰ Pilih level</button>
+  <a class="mi" href="../" role="menuitem">&#8962; Kembali ke Ulin</a>
+</div>
 <div id="hint" role="status" aria-live="polite"></div>
 <div id="aim" hidden><span id="aimText"></span><small>◀ ▶ pilih tumpuan · <b>E</b> ikat · <b>Q</b> batal</small></div>
 
@@ -51,20 +62,22 @@
 
 <section id="result" class="screen" hidden>
   <h2>Sampai di leuit!</h2>
-  <div class="stars"><div id="s1">⭐<small>Sampai</small></div><div id="s2">⭐<small>7 padi</small></div><div id="s3">⭐<small>Tanpa jejak</small></div></div>
+  <div class="stars"><div id="s1">⭐<small>Sampai</small></div><div id="s2">⭐<small id="s2t">Semua padi</small></div><div id="s3">⭐<small>Pulang bersih</small></div></div>
   <p id="resText"></p>
-  <div class="row"><button id="retry" class="btn small">Ulang level</button><button id="toFinale" class="btn">Lanjut</button></div>
+  <p id="motifLine" class="motif-line" hidden></p>
+  <div class="row"><button id="retry" class="btn small">Ulang level</button><button id="toLevels" class="btn small">Pilih level</button><button id="next" class="btn">Lanjut</button></div>
 </section>
 
-<section id="card" class="screen" hidden>
-  <div class="photos" id="photos"></div>
-  <div class="msg">
-    <h2>Selamat ulang tahun ke-7, Mael!</h2>
-    <p>Seperti awi: tumbuh lurus, kuat, dan tetap rendah hati.</p>
-    <p>Sayangi alam dan sesama, ya.</p>
-    <p class="love">Baba sayang Mael, selamanya.</p>
-    <div class="row"><button id="again" class="btn small">Main lagi</button><a class="btn small" href="../">&#8962; Ulin</a></div>
-  </div>
+<section id="levels" class="screen" hidden aria-label="Pilih level">
+  <h2>Pilih level</h2>
+  <div id="chapters" class="chapters"></div>
+  <div class="row"><button id="toBook" class="btn small">Buku motif</button><button id="levelsBack" class="btn small">Kembali</button></div>
+</section>
+<section id="book" class="screen" hidden aria-label="Buku motif">
+  <h2>Buku motif</h2>
+  <p class="how">Pulang bersih dari sebuah level, dan Ambu menenun satu motif untukmu.</p>
+  <div id="motifs" class="motifs"></div>
+  <div class="row"><button id="bookBack" class="btn small">Kembali</button></div>
 </section>
 
 <div id="rotate" class="screen" hidden role="status"><p>Miringkan HP supaya layarnya lebih lega.</p></div>
