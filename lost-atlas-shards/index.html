@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <title>Lost Atlas: Shards of Eternity · Ulin</title>
+  <meta name="description" content="Third-person 3D fantasy action-adventure. Customize Mael, master gravity manipulation, and recover the first Atlas Shard in The Shattered Sanctuary." />
+  <meta name="theme-color" content="#0F171E" />
+  <link rel="icon" href="./assets/favicon-Cm-OeZ7U.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="./assets/index-CLZjCcnc.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-QKRVBXEf.css">
+</head>
+<body>
+  <canvas id="gameCanvas" aria-label="Lost Atlas: Shards of Eternity 3D Viewport"></canvas>
+
+  <!-- Screen Transition & Damage Vignette Overlays -->
+  <div id="damageFlash" class="overlay-fx" aria-hidden="true"></div>
+  <div id="cinematicBars" class="cinematic-bars" hidden aria-hidden="true">
+    <div class="bar-top"></div>
+    <div class="bar-bottom"><p id="cinematicCaption"></p></div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-card">
+      <div class="seal-spinner"></div>
+      <h2>LOST ATLAS</h2>
+      <p id="loadingStatus">Awakening The Shattered Sanctuary…</p>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- 1. MAIN MENU SCREEN                                                     -->
+  <!-- ======================================================================= -->
+  <section id="scrMainMenu" class="screen" aria-label="Main Menu">
+    <div class="top-nav">
+      <a class="nav-pill" href="../" aria-label="Kembali ke Ulin">← Ulin</a>
+      <div class="nav-right">
+        <button id="btnMenuSettings" class="nav-pill" type="button">⚙ Settings</button>
+        <button id="btnMenuMute" class="nav-pill" type="button" aria-label="Toggle Mute">🔊 Audio</button>
+      </div>
+    </div>
+
+    <div class="hero-box">
+      <p class="eyebrow">SHARDS OF ETERNITY · VERTICAL SLICE</p>
+      <h1 class="main-title">LOST ATLAS</h1>
+      <p class="hero-desc">
+        The ancient Atlas that binds gravity has shattered. Step into the boots of Mael, wield the crimson rune blades, and unlock the Great Seal of the Shattered Sanctuary.
+      </p>
+      <div class="hero-actions">
+        <button id="btnOpenCreator" class="btn-primary-gold" type="button">Customize Hero &amp; Start</button>
+        <button id="btnQuickStart" class="btn-secondary-slate" type="button">Quick Launch (Mael)</button>
+      </div>
+      <div class="hero-controls-strip">
+        <span><b>WASD</b> Move</span>
+        <span><b>Space</b> Jump</span>
+        <span><b>LMB</b> Slash</span>
+        <span><b>Q</b> Gravity Dash</span>
+        <span><b>E</b> Crimson Gravity Pulse</span>
+        <span><b>F / RMB</b> Gravity Anchor</span>
+        <span><b>Tab</b> Inventory</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- 2. INTERACTIVE 3D CHARACTER CREATOR (Matches Video 00:00 - 00:01!)      -->
+  <!-- ======================================================================= -->
+  <section id="scrCreator" class="screen creator-screen" hidden aria-label="Character Creator">
+    <!-- Top Bar matching video 00:00 -->
+    <header class="creator-topbar">
+      <div class="creator-top-left">
+        <button id="btnCreatorBack" class="icon-circle-btn" type="button" title="Back to Main Menu">←</button>
+        <span class="creator-Header-title">Sanctuary Armory</span>
+        <button id="btnCreatorHelp" class="icon-circle-btn" type="button" title="Character Controls">?</button>
+      </div>
+      <div class="creator-top-right">
+        <div class="currency-pill"><span class="coin-dot">🪙</span> <b id="uiCreatorGold">5,909</b></div>
+        <div class="currency-pill"><span class="shard-dot">💎</span> <b id="uiCreatorShards">3,384</b></div>
+        <button id="btnCreatorSettings" class="icon-circle-btn" type="button" title="Settings">⚙</button>
+      </div>
+    </header>
+
+    <!-- Left Panel: Outfit Selector + 3x2 Visual Equipment Slot Cards (Video 00:00) -->
+    <aside class="creator-panel creator-left-panel">
+      <div class="outfit-dropdown-bar">
+        <button id="btnPrevOutfit" class="arrow-btn" type="button" aria-label="Previous Outfit">‹</button>
+        <div class="outfit-dropdown-label">
+          <strong id="lblOutfitName">Explorer Outfit</strong>
+          <small id="lblOutfitRole">Balanced Wayfinder</small>
+        </div>
+        <button id="btnNextOutfit" class="arrow-btn" type="button" aria-label="Next Outfit">›</button>
+      </div>
+
+      <!-- 3x2 Modular Equipment Cards matching video 00:00 left grid -->
+      <div class="equip-slot-grid" id="equipSlotGrid">
+        <button class="equip-card active" data-slot="tunic" type="button" title="Cycle Armor Tunic">
+          <svg viewBox="0 0 64 64" class="slot-svg">
+            <path d="M18 14 L26 10 L32 18 L38 10 L46 14 L54 24 L46 30 L44 54 L20 54 L18 30 L10 24 Z" fill="#2B3548" stroke="#C89D54" stroke-width="2.5"/>
+            <path d="M26 10 L32 24 L38 10" fill="none" stroke="#E2B857" stroke-width="2"/>
+          </svg>
+          <span>Tunic</span>
+        </button>
+        <button class="equip-card" data-slot="pauldron" type="button" title="Toggle Shoulder Armor">
+          <svg viewBox="0 0 64 64" class="slot-svg">
+            <path d="M10 34 Q14 16 32 16 Q50 16 54 34 L46 42 Q32 32 18 42 Z" fill="#5A3825" stroke="#C89D54" stroke-width="2.5"/>
+            <path d="M14 32 Q32 22 50 32" fill="none" stroke="#E2B857" stroke-width="2"/>
+          </svg>
+          <span>Pauldrons</span>
+        </button>
+        <button class="equip-card" data-slot="hood" type="button" title="Cycle Hairstyle / Hood">
+          <svg viewBox="0 0 64 64" class="slot-svg">
+            <path d="M16 48 Q14 14 32 10 Q50 14 48 48 L38 44 Q32 24 26 44 Z" fill="#232A38" stroke="#E2B857" stroke-width="2.5"/>
+          </svg>
+          <span id="lblSlotHair">Quiff Hair</span>
+        </button>
+        <button class="equip-card active" data-slot="cape" type="button" title="Toggle Wayfinder Cape">
+          <svg viewBox="0 0 64 64" class="slot-svg">
+            <path d="M20 12 L44 12 L52 54 L32 48 L12 54 Z" fill="#8E1B24" stroke="#C89D54" stroke-width="2.5"/>
+          </svg>
+          <span id="lblSlotCape">Cape: On</span>
+        </button>
+        <button class="equip-card" data-slot="body" type="button" title="Cycle Body Archetype">
+          <svg viewBox="0 0 64 64" class="slot-svg">
+            <circle cx="32" cy="18" r="8" fill="#D9A17C" stroke="#C89D54" stroke-width="2"/>
+            <path d="M20 30 L44 30 L40 54 L24 54 Z" fill="#3A4760" stroke="#C89D54" stroke-width="2"/>
+          </svg>
+          <span id="lblSlotBody">Masculine</span>
+        </button>
+        <button class="equip-card" data-slot="weapon" type="button" title="Cycle Starting Weapon">
+          <svg viewBox="0 0 64 64" class="slot-svg">
+            <path d="M16 48 L48 16 M22 16 L48 42" stroke="#CBD5E1" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="32" cy="32" r="6" fill="#C89D54"/>
+          </svg>
+          <span id="lblSlotWeapon">Greatsword</span>
+        </button>
+      </div>
+
+      <!-- Body & Hair Quick Row -->
+      <div class="creator-subrow">
+        <label class="creator-label">Archetype</label>
+        <div class="pill-group" id="bodyStyleGroup">
+          <button type="button" class="mini-pill active" data-body="masculine">Mael</button>
+          <button type="button" class="mini-pill" data-body="feminine">Lyra</button>
+          <button type="button" class="mini-pill" data-body="fantasy">Aether</button>
+        </div>
+      </div>
+
+      <div class="creator-subrow">
+        <label class="creator-label">Hairstyle</label>
+        <div class="pill-group" id="hairstyleGroup">
+          <button type="button" class="mini-pill active" data-hair="0">Quiff</button>
+          <button type="button" class="mini-pill" data-hair="1">Long</button>
+          <button type="button" class="mini-pill" data-hair="2">Braids</button>
+          <button type="button" class="mini-pill" data-hair="3">Hood</button>
+        </div>
+      </div>
+
+      <div class="creator-left-footer">
+        <button id="btnCreatorCancel" class="btn-cancel-creator" type="button">Cancel</button>
+      </div>
+    </aside>
+
+    <!-- Center Stage Turntable Controls -->
+    <div class="creator-stage-zone" id="creatorStageZone" title="Drag left/right to rotate character">
+      <div class="turntable-hint">
+        <button id="btnTurnLeft" class="turn-btn" type="button" aria-label="Rotate Left">↺</button>
+        <span>Drag to Inspect 3D Model</span>
+        <button id="btnTurnRight" class="turn-btn" type="button" aria-label="Rotate Right">↻</button>
+      </div>
+    </div>
+
+    <!-- Right Panel: Name, Tabs, Swatches, Weapons, Accessories, START ADVENTURE (Video 00:00) -->
+    <aside class="creator-panel creator-right-panel">
+      <div class="char-name-header">
+        <input id="inpCharName" class="char-name-input" type="text" maxlength="20" value="Mael" aria-label="Character Name" />
+      </div>
+
+      <div class="creator-tabs">
+        <button id="tabAppearance" class="creator-tab active" type="button">Mael</button>
+        <button id="tabArmory" class="creator-tab" type="button">Armory</button>
+      </div>
+
+      <!-- TAB 1: APPEARANCE & GEAR (Video 00:00 Default View) -->
+      <div id="paneAppearance" class="creator-tab-pane">
+        <div class="swatch-section">
+          <div class="section-header-row">
+            <span class="creator-label">Outfit</span>
+            <small id="lblSwatchName">Crimson Sanctuary</small>
+          </div>
+          <div id="outfitSwatchGrid" class="swatch-grid-10"></div>
+        </div>
+
+        <div class="swatch-section">
+          <div class="section-header-row">
+            <span class="creator-label">Color</span>
+            <div class="color-channel-tabs" id="colorChannelTabs">
+              <button type="button" class="channel-btn active" data-channel="trim">Trim</button>
+              <button type="button" class="channel-btn" data-channel="hair">Hair</button>
+              <button type="button" class="channel-btn" data-channel="skin">Skin</button>
+              <button type="button" class="channel-btn" data-channel="eye">Eyes</button>
+            </div>
+          </div>
+          <div id="secondarySwatchGrid" class="swatch-grid-10"></div>
+        </div>
+
+        <div class="weapons-section">
+          <div class="section-header-row">
+            <span class="creator-label">Weapons</span>
+            <small id="lblWeaponSubtitle">Sunforged Greatsword</small>
+          </div>
+          <div class="weapons-grid-3" id="weaponCardGrid">
+            <button type="button" class="weapon-card" data-weapon="daggers">
+              <svg viewBox="0 0 64 64" class="weapon-svg">
+                <path d="M16 50 L44 14 M24 52 L50 18" stroke="#E2E8F0" stroke-width="4" stroke-linecap="round"/>
+                <path d="M12 42 L26 48 M20 44 L34 50" stroke="#C89D54" stroke-width="3"/>
+              </svg>
+              <span>Dual Blades</span>
+              <i class="lvl-badge">1</i>
+            </button>
+            <button type="button" class="weapon-card active" data-weapon="sword">
+              <svg viewBox="0 0 64 64" class="weapon-svg">
+                <path d="M14 50 L50 14" stroke="#F8FAFC" stroke-width="5" stroke-linecap="round"/>
+                <path d="M20 44 L44 20" stroke="#EF4444" stroke-width="2"/>
+                <path d="M14 34 L30 50" stroke="#C89D54" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <span>Greatsword</span>
+              <i class="lvl-badge">2</i>
+            </button>
+            <button type="button" class="weapon-card" data-weapon="staff">
+              <svg viewBox="0 0 64 64" class="weapon-svg">
+                <path d="M14 52 L46 20" stroke="#8C6239" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="46" cy="18" r="9" fill="none" stroke="#C89D54" stroke-width="2.5"/>
+                <circle cx="46" cy="18" r="4.5" fill="#38BDF8"/>
+              </svg>
+              <span>Astral Staff</span>
+              <i class="lvl-badge">3</i>
+            </button>
+          </div>
+        </div>
+
+        <div class="accessories-section">
+          <span class="creator-label">Accessories</span>
+          <div class="accessory-row" id="accessoryGrid">
+            <button type="button" class="acc-circle active" data-acc="amulet" title="Wayfinder Amulet (+15 Max HP)">
+              <span>📿</span>
+            </button>
+            <button type="button" class="acc-circle" data-acc="circlet" title="Sanctuary Circlet (-15% Pulse Cooldown)">
+              <span>👑</span>
+            </button>
+            <button type="button" class="acc-circle" data-acc="lantern" title="Atlas Relic Lantern (Relic Finder)">
+              <span>🏮</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: ARMORY STATS & LORE -->
+      <div id="paneArmory" class="creator-tab-pane" hidden>
+        <div class="armory-stat-box">
+          <h4 id="armoryOutfitTitle">Explorer Outfit</h4>
+          <p id="armoryOutfitDesc">Quilted sanctuary tunic, bronze-trimmed pauldrons, and the signature crimson wayfinder cloak.</p>
+          <div class="stat-bars">
+            <div class="stat-line"><span>Vitality (Max HP)</span><b id="statHpVal">125</b></div>
+            <div class="stat-line"><span>Attack Power</span><b id="statAtkVal">28</b></div>
+            <div class="stat-line"><span>Agility &amp; Speed</span><b id="statSpdVal">104%</b></div>
+            <div class="stat-line"><span>Gravity Resonance</span><b id="statGravVal">100%</b></div>
+          </div>
+          <hr class="armory-divider" />
+          <h4 id="armoryWeaponTitle">Sunforged Greatsword</h4>
+          <p id="armoryWeaponDesc">Sweeping silver-and-crimson arcs that cleave multiple foes and break guard stances.</p>
+        </div>
+      </div>
+
+      <!-- Bottom Action Row matching video 00:00-00:01 -->
+      <div class="creator-right-footer">
+        <button id="btnAutoRotate" class="btn-rotate-circle" type="button" title="Toggle 360° Turntable">↻</button>
+        <button id="btnStartAdventure" class="btn-start-adventure" type="button">START ADVENTURE</button>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- 3. IN-GAME HUD                                                          -->
+  <!-- ======================================================================= -->
+  <div id="hud" class="hud-layer" hidden>
+    <!-- Top-Left Player Status -->
+    <div class="hud-top-left">
+      <div class="hud-char-header">
+        <span id="hudCharName" class="hud-name">Mael</span>
+        <span id="hudWeaponBadge" class="hud-weapon-tag">Sunforged Greatsword</span>
+      </div>
+      <div class="hp-bar-outer" aria-label="Player Health">
+        <div id="hudHpFill" class="hp-bar-fill"></div>
+        <span id="hudHpText" class="hp-bar-text">125 / 125</span>
+      </div>
+      <div class="hud-currencies">
+        <span>🪙 <b id="hudGold">5,909</b></span>
+        <span>💎 <b id="hudShards">3,384</b></span>
+        <span>📦 Chests <b id="hudChests">0/2</b></span>
+      </div>
+    </div>
+
+    <!-- Top-Center Objective Tracker & Boss Health Bar -->
+    <div class="hud-top-center">
+      <div class="objective-banner">
+        <span class="obj-tag">OBJECTIVE</span>
+        <p id="hudObjectiveText">Cross the Awakening Root-Bridge and leap the chasm</p>
+      </div>
+
+      <div id="hudBossBox" class="boss-bar-box" hidden>
+        <div class="boss-header">
+          <strong id="hudBossName">Archon Vael · Warden of the Seal</strong>
+          <span id="hudBossPhase" class="boss-phase-pill">PHASE I</span>
+        </div>
+        <div class="boss-hp-outer">
+          <div id="hudBossHpFill" class="boss-hp-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top-Right Quick Menu Buttons -->
+    <div class="hud-top-right">
+      <button id="btnHudInventory" class="hud-icon-btn" type="button" title="Inventory & Status (Tab)">🎒 <small>Tab</small></button>
+      <button id="btnHudCreator" class="hud-icon-btn" type="button" title="Customize Hero">🧥</button>
+      <button id="btnHudPause" class="hud-icon-btn" type="button" title="Pause (Esc)">⏸ <small>Esc</small></button>
+    </div>
+
+    <!-- Center Toast / Lore Discovery Banner -->
+    <div id="hudToast" class="hud-toast" hidden>
+      <strong id="hudToastTitle">SANCTUARY DISCOVERY</strong>
+      <p id="hudToastBody"></p>
+    </div>
+
+    <!-- Contextual Interaction Prompt -->
+    <div id="hudPrompt" class="hud-prompt" hidden>
+      <span id="hudPromptText">Press [E] to Interact</span>
+    </div>
+
+    <!-- Bottom-Center Gravity & Combat Ability Bar -->
+    <div class="hud-ability-bar">
+      <div class="ability-slot" id="slotAttack">
+        <span class="ability-key">LMB</span>
+        <div class="ability-icon">⚔️</div>
+        <span class="ability-name">Slash</span>
+        <div class="cd-overlay" id="cdAttack"></div>
+      </div>
+      <div class="ability-slot" id="slotDash">
+        <span class="ability-key">Q</span>
+        <div class="ability-icon">💨</div>
+        <span class="ability-name">Gravity Dash</span>
+        <div class="cd-overlay" id="cdDash"></div>
+      </div>
+      <div class="ability-slot crimson-slot" id="slotPulse">
+        <span class="ability-key">E</span>
+        <div class="ability-icon">۞</div>
+        <span class="ability-name">Crimson Pulse</span>
+        <div class="cd-overlay" id="cdPulse"></div>
+      </div>
+      <div class="ability-slot" id="slotAnchor">
+        <span class="ability-key">F / RMB</span>
+        <div class="ability-icon">⚓</div>
+        <span class="ability-name">Anchor</span>
+        <div class="cd-overlay" id="cdAnchor"></div>
+      </div>
+      <div class="ability-slot locked" id="slotRift">
+        <span class="ability-key">R</span>
+        <div class="ability-icon">🌌</div>
+        <span class="ability-name" id="lblRiftName">Rift (Locked)</span>
+        <div class="cd-overlay" id="cdRift"></div>
+      </div>
+    </div>
+
+    <!-- Touch Controls for Mobile / Tablet -->
+    <div id="touchControls" class="touch-controls">
+      <div class="touch-dpad">
+        <button type="button" data-touch="forward">▲</button>
+        <div class="dpad-mid">
+          <button type="button" data-touch="left">◀</button>
+          <button type="button" data-touch="right">▶</button>
+        </div>
+        <button type="button" data-touch="backward">▼</button>
+      </div>
+      <div class="touch-actions">
+        <button type="button" class="t-btn t-atk" data-touch="attack">⚔️</button>
+        <button type="button" class="t-btn t-pulse" data-touch="interact">۞</button>
+        <button type="button" class="t-btn t-jump" data-touch="jump">⤒</button>
+        <button type="button" class="t-btn t-dash" data-touch="dash">💨</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- 4. INVENTORY & STATUS MODAL (Tab)                                       -->
+  <!-- ======================================================================= -->
+  <section id="scrInventory" class="screen modal-screen" hidden aria-label="Inventory and Status">
+    <div class="modal-card wide-modal">
+      <div class="modal-header">
+        <h2>Wayfinder Status &amp; Inventory</h2>
+        <button id="btnCloseInventory" class="icon-circle-btn" type="button">✕</button>
+      </div>
+      <div class="inv-grid">
+        <div class="inv-col">
+          <h3>Character Loadout</h3>
+          <p id="invCharSummary">Mael · Explorer Outfit</p>
+          <div class="inv-quick-weapons">
+            <span>Switch Active Weapon:</span>
+            <div class="pill-group" id="invWeaponSwitch">
+              <button type="button" class="mini-pill" data-inv-weapon="sword">Sunforged Greatsword</button>
+              <button type="button" class="mini-pill" data-inv-weapon="daggers">Twin Shadow Blades</button>
+              <button type="button" class="mini-pill" data-inv-weapon="staff">Astral Gravity Staff</button>
+            </div>
+          </div>
+          <h3>Gravity Abilities</h3>
+          <ul class="inv-ability-list">
+            <li><b>[Q] Gravity Dash:</b> Directional burst across chasms with dodge invulnerability frames.</li>
+            <li><b>[E] Crimson Gravity Pulse:</b> Unleashes the blazing red rune circle (00:06), stunning foes, aligning floating stone bridges, and unlocking the Great Seal Door.</li>
+            <li><b>[F / RMB] Gravity Anchor:</b> Grapples onto elevated sanctuary anchor rings.</li>
+            <li id="invRiftDesc"><b>[R] Gravity Rift:</b> Awakens during the final Sanctuary Warden encounter.</li>
+          </ul>
+        </div>
+        <div class="inv-col">
+          <h3>Recovered Relics &amp; Shards</h3>
+          <div id="invRelicsList" class="relics-box">
+            <p class="muted-note">Explore the Whispering Overlook and Gravity Bridge islands to discover optional Sanctuary Chests.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- 5. SETTINGS MODAL                                                       -->
+  <!-- ======================================================================= -->
+  <section id="scrSettings" class="screen modal-screen" hidden aria-label="Settings">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Sanctuary Settings</h2>
+        <button id="btnCloseSettings" class="icon-circle-btn" type="button">✕</button>
+      </div>
+      <div class="settings-form">
+        <label class="setting-row">
+          <span>Master Volume</span>
+          <input id="rngMasterVol" type="range" min="0" max="100" value="85" />
+        </label>
+        <label class="setting-row">
+          <span>Music Volume</span>
+          <input id="rngMusicVol" type="range" min="0" max="100" value="65" />
+        </label>
+        <label class="setting-row">
+          <span>SFX Volume</span>
+          <input id="rngSfxVol" type="range" min="0" max="100" value="90" />
+        </label>
+        <label class="setting-row">
+          <span>Graphics Quality</span>
+          <select id="selQuality">
+            <option value="high">High (UnrealBloom + Shadows + God-Rays)</option>
+            <option value="balanced">Balanced (Shadows + No Bloom)</option>
+            <option value="low">Low (Performance Mode)</option>
+          </select>
+        </label>
+        <label class="setting-row">
+          <span>Mouse Sensitivity</span>
+          <input id="rngSensitivity" type="range" min="30" max="200" value="100" />
+        </label>
+        <label class="setting-row">
+          <span>Reduced Motion (Less Shake)</span>
+          <input id="chkReducedMotion" type="checkbox" />
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- 6. PAUSE MENU (Esc)                                                     -->
+  <!-- ======================================================================= -->
+  <section id="scrPause" class="screen modal-screen" hidden aria-label="Pause Menu">
+    <div class="modal-card">
+      <h2>Sanctuary Paused</h2>
+      <p class="modal-sub">Mouse cursor released. Choose an action below:</p>
+      <div class="modal-stack-btns">
+        <button id="btnPauseResume" class="btn-primary-gold" type="button">Resume Adventure</button>
+        <button id="btnPauseCheckpoint" class="btn-secondary-slate" type="button">Respawn at Last Checkpoint</button>
+        <button id="btnPauseCreator" class="btn-secondary-slate" type="button">Character Sanctuary (Customize)</button>
+        <button id="btnPauseSettings" class="btn-secondary-slate" type="button">Settings</button>
+        <button id="btnPauseRestart" class="btn-secondary-slate" type="button">Restart Full Slice</button>
+        <a class="btn-secondary-slate link-btn" href="../">← Return to Ulin Platform</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- 7. DEFEAT & RETRY SCREEN                                                -->
+  <!-- ======================================================================= -->
+  <section id="scrDefeat" class="screen modal-screen" hidden aria-label="Defeat Screen">
+    <div class="modal-card defeat-card">
+      <p class="eyebrow crimson-text">GRAVITY COLLAPSED</p>
+      <h2>You Have Fallen</h2>
+      <p id="defeatReasonText" class="modal-sub">The Sanctuary's resonance pulls you back to the last kindled brazier.</p>
+      <div class="modal-stack-btns">
+        <button id="btnDefeatCheckpoint" class="btn-primary-gold" type="button">Retry from Checkpoint</button>
+        <button id="btnDefeatRestart" class="btn-secondary-slate" type="button">Restart from Beginning</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================================= -->
+  <!-- 8. VICTORY & ENDING SEQUENCE SCREEN (Video 00:09 First Atlas Shard!)    -->
+  <!-- ======================================================================= -->
+  <section id="scrVictory" class="screen modal-screen" hidden aria-label="Victory Screen">
+    <div class="modal-card victory-card">
+      <p class="eyebrow cyan-text">FIRST FRAGMENT RECOVERED</p>
+      <h2>The Shattered Sanctuary Restored</h2>
+      <p class="modal-sub">
+        The First Shard of the Atlas blazes within the Astronomical Ring. Across the sea of clouds, the Sunken Observatory of Aethelgard stirs—awaiting the next chapter of Mael's journey.
+      </p>
+      <div class="victory-stats" id="victoryStatsBox"></div>
+      <div class="modal-stack-btns">
+        <button id="btnVictoryChapter2" class="btn-primary-gold" type="button">Begin Chapter 2: Sunken Observatory</button>
+        <button id="btnVictoryExplore" class="btn-primary-gold" type="button">Continue Exploring Sanctuary</button>
+        <button id="btnVictoryReplay" class="btn-secondary-slate" type="button">Play Again from Start</button>
+        <button id="btnVictoryCreator" class="btn-secondary-slate" type="button">Customize Hero</button>
+        <a class="btn-secondary-slate link-btn" href="../">← Return to Ulin Platform</a>
+      </div>
+    </div>
+  </section>
+
+</body>
+</html>
